@@ -1,6 +1,9 @@
 % Method to add new data to the validation data struct
 function data = validationData(varargin)
     
+    % Get current project name
+    theProjectName = getpref('UnitTest', 'projectName');
+    
     data = [];
     persistent validationData
     
@@ -35,7 +38,7 @@ function data = validationData(varargin)
             validationData.hashData.(fieldName) = roundCellArray(fieldValue);
         elseif (ischar(fieldValue))
             % only add string field if we are comparing them
-            compareStringFields = getpref('isetbioValidation', 'compareStringFields');
+            compareStringFields = getpref(theProjectName, 'compareStringFields');
             if (compareStringFields)
                 validationData.hashData.(fieldName) = fieldValue;
                 %fprintf('ADDING CHAR FIELD %s TO HASH DATA', fieldName); 
@@ -70,8 +73,11 @@ function s = roundStruct(oldStruct)
         if isstruct(fieldValue)
             s.(structFieldNames{k}) = roundStruct(fieldValue);
         elseif ischar(fieldValue)
+            % Get current project name
+            theProjectName = getpref('UnitTest', 'projectName');
+            
             % only add string field if we are comparing them
-            compareStringFields = getpref('isetbioValidation', 'compareStringFields');
+            compareStringFields = getpref(theProjectName, 'compareStringFields');
             if (compareStringFields)
                 s.(structFieldNames{k}) = fieldValue;
                 %fprintf('ADDING CHAR FIELD %s TO HASH DATA', structFieldNames{k}); 
@@ -100,8 +106,11 @@ function cellArray = roundCellArray(oldCellArray)
         
         % Char values
         if ischar(fieldValue)
+            % Get current project name
+            theProjectName = getpref('UnitTest', 'projectName');
+    
             % only add string field if we are comparing them
-            compareStringFields = getpref('isetbioValidation', 'compareStringFields');
+            compareStringFields = getpref(theProjectName, 'compareStringFields');
             if (compareStringFields)
             else
                 cellArray{k} = '';

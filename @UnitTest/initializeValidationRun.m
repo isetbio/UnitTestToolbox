@@ -16,6 +16,9 @@ end
 
 function runParams = initializeRunTimeParams(varargin)
 
+    % Get current project name
+    theProjectName = getpref('UnitTest', 'projectName');
+    
     for k = 1:numel(UnitTest.runTimeOptionNames)
        eval(sprintf('defaultParams.%s = UnitTest.runTimeOptionDefaultValues{k};', UnitTest.runTimeOptionNames{k}));
     end
@@ -25,15 +28,15 @@ function runParams = initializeRunTimeParams(varargin)
         
         runParamsPassed = varargin{1};
         runParamsPassed = runParamsPassed{1};
-        % If the passed argument is an empty array, use the isetbio prefs
+        % If the passed argument is an empty array, use the project prefs
         while (iscell(runParamsPassed{1}) && (~isempty(runParamsPassed{1})))
             runParamsPassed = runParamsPassed{1};
         end
         
         if (isempty(runParamsPassed{1}))
             runParams = defaultParams;
-            runParams.generatePlots   = getpref('isetbioValidation', 'generatePlots');
-            runParams.closeFigsOnInit = getpref('isetbioValidation', 'closeFigsOnInit');
+            runParams.generatePlots   = getpref(theProjectName, 'generatePlots');
+            runParams.closeFigsOnInit = getpref(theProjectName, 'closeFigsOnInit');
             if (runParams.closeFigsOnInit)
                 UnitTest.closeAllNonDataMismatchFigures();
             end
