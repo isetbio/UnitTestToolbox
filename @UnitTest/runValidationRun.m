@@ -29,7 +29,6 @@ function returnItems = runValidationRun(functionHandle, originalNargout, varargi
         runTimeParams.generatePlots = true;
     end
     
-
     %% Call the validation function
     functionHandle(runTimeParams);
 

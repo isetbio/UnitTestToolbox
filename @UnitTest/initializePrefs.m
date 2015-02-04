@@ -7,10 +7,10 @@ function initializePrefs(initMode)
     
     % Get current project name
     theProjectName = getpref('UnitTest', 'projectName');
-    if ispref(theProjectName, 'projectSpecificOptions')
-       projectSpecificOptions = getpref(theProjectName, 'projectSpecificOptions');
+    if ispref(theProjectName, 'projectSpecificPreferences')
+       projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences')
     else
-       error('\nProjectSpecificOptions do not exist for project ''%s''. Did you run the ''setProjectSpecificUnitTestPreferences.m'' script for ''%s''? \n', theProjectName,theProjectName); 
+       error('\nProjectSpecificPreferences do not exist for project ''%s''. Did you run the ''setProjectSpecificUnitTestPreferences.m'' script for ''%s''? \n', theProjectName,theProjectName); 
     end
     
     if (strcmp(initMode, 'reset'))
@@ -47,7 +47,6 @@ function initializePrefs(initMode)
         setpref(theProjectName, 'closeFigsOnInit',  value); 
     end
     
-    
     if (~ispref(theProjectName, 'verbosity'))  || (strcmp(initMode, 'reset'))
         index = find(strcmp(UnitTest.validationOptionNames, 'verbosity'));
         value = UnitTest.validationOptionDefaultValues{index};
@@ -73,13 +72,12 @@ function initializePrefs(initMode)
     end
     
     % Now the project-specific preferences
-    preferenceNames = fieldnames(projectSpecificOptions);
+    preferenceNames = fieldnames(projectSpecificPreferences);
     for k = 1:numel(preferenceNames)
         thePreferenceName = preferenceNames{k};
-        setpref(theProjectName, thePreferenceName,  projectSpecificOptions.(thePreferenceName));
+        setpref(theProjectName, thePreferenceName,  projectSpecificPreferences.(thePreferenceName));
     end
     
     % restore the 'projectSpecificOptions'
-    setpref(theProjectName, 'projectSpecificOptions', projectSpecificOptions);
-    
+    setpref(theProjectName, 'projectSpecificPreferences', projectSpecificPreferences);
 end
