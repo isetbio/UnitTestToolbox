@@ -1,8 +1,17 @@
 function returnItems = runValidationRun(functionHandle, originalNargout, varargin)
     
-    % Initialization
+    % Parse varargin to extract original nargin.
+    % This determines whether the script is run in stand-alone mode.
+    original_varargin = varargin;
+    k = 0;
+    while (iscell(original_varargin)) && (numel(original_varargin)>0)
+       original_varargin = original_varargin{1};
+       k = k + 1;
+    end
+    original_nargin = k-1;
+    
     % Initialize validation run
-    runTimeParams = UnitTest.initializeValidationRun(varargin);
+    runTimeParams = UnitTest.initializeValidationRun(original_nargin, varargin);
     
     % Initialize return params
     if (originalNargout > 0) returnItems = {'', false, [], [], []}; end

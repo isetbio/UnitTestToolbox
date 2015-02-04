@@ -1,7 +1,6 @@
-function runTimeParams = initializeValidationRun(varargin)
-
+function runTimeParams = initializeValidationRun(original_nargin, varargin)  
     % Initialize run params
-    runTimeParams = initializeRunTimeParams(varargin);
+    runTimeParams = initializeRunTimeParams(original_nargin, varargin);
     
     % Initialize validation record
     UnitTest.validationRecord('command', 'init');  
@@ -11,30 +10,27 @@ function runTimeParams = initializeValidationRun(varargin)
     
     % Initialize extraData
     UnitTest.extraData('command', 'init');
-    
 end
 
-function runParams = initializeRunTimeParams(varargin)
-
-    % Get current project name
-    theProjectName = getpref('UnitTest', 'projectName');
-    
+function runParams = initializeRunTimeParams(original_nargin, varargin)
+        
     for k = 1:numel(UnitTest.runTimeOptionNames)
        eval(sprintf('defaultParams.%s = UnitTest.runTimeOptionDefaultValues{k};', UnitTest.runTimeOptionNames{k}));
     end
     
-    if (nargin > 0)
-        assert(nargin == 1);
+    if (original_nargin > 0)
+        assert(nargin == 2);
         
         runParamsPassed = varargin{1};
         runParamsPassed = runParamsPassed{1};
-        % If the passed argument is an empty array, use the project prefs
         while (iscell(runParamsPassed{1}) && (~isempty(runParamsPassed{1})))
             runParamsPassed = runParamsPassed{1};
         end
         
         if (isempty(runParamsPassed{1}))
             runParams = defaultParams;
+            % Get current project name
+            theProjectName = getpref('UnitTest', 'projectName');
             runParams.generatePlots   = getpref(theProjectName, 'generatePlots');
             runParams.closeFigsOnInit = getpref(theProjectName, 'closeFigsOnInit');
             if (runParams.closeFigsOnInit)
