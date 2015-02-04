@@ -1,4 +1,4 @@
-% Method to select project-specific preferences 
+% Method to select the preference group corresponding to the given project
 function usePreferencesForProject(theProjectName)
 
     if ((nargin ~= 1) || (~ischar(theProjectName)))

@@ -14,6 +14,8 @@ function listPrefs
             fprintf('\t %-25s : ''%s''\n', sprintf('''%s''', preferenceNames{k}), value);
         elseif islogical(value)
             fprintf('\t %-25s : %s\n', sprintf('''%s''', preferenceNames{k}), logicalToString(value));
+        elseif isstruct(value)
+            fprintf('\t %-25s : backup of project specific options\n', sprintf('''%s''', preferenceNames{k}));
         else
             fprintf('\t %-25s : %g\n', sprintf('''%s''', preferenceNames{k}), value);
         end

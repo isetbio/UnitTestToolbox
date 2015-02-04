@@ -1,6 +1,6 @@
 classdef UnitTest < handle
     % Class to handle unit tests for any project
-    
+
     % Public properties (Read/write by all)
     properties
 

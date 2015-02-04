@@ -6,7 +6,7 @@ function initializeUnitTest(obj)
     end
 
     % setup default directories
-    % Get current project name
+    % get current project name
     theProjectName = getpref('UnitTest', 'projectName');
     obj.rootDir    = getpref(theProjectName, 'validationRootDir');
     obj.htmlDir    = fullfile(obj.rootDir, 'HTMLpublishedData', filesep);

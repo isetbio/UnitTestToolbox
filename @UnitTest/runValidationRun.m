@@ -1,7 +1,6 @@
 function returnItems = runValidationRun(functionHandle, originalNargout, varargin)
     
-    % Parse varargin to extract original nargin.
-    % This determines whether the script is run in stand-alone mode.
+    %% Parse varargin to determine whether the script is run in stand-alone mode.
     original_varargin = varargin;
     k = 0;
     while (iscell(original_varargin)) && (numel(original_varargin)>0)
@@ -10,8 +9,17 @@ function returnItems = runValidationRun(functionHandle, originalNargout, varargi
     end
     original_nargin = k-1;
     
-    % Initialize validation run
-    runTimeParams = UnitTest.initializeValidationRun(original_nargin, varargin);
+    %% Set the UnitTest preference 'inStandAloneMode'
+    if (original_nargin > 0)
+        % script is managed by a @UnitTest object
+        setpref('UnitTest', 'inStandAloneMode', false);
+    else
+        % script is running in stand-alone mode
+        setpref('UnitTest', 'inStandAloneMode', true);
+    end
+    
+    %% Initialize validation run
+    runTimeParams = UnitTest.initializeValidationRun(varargin);
     
     % Initialize return params
     if (originalNargout > 0) returnItems = {'', false, [], [], []}; end
@@ -21,6 +29,7 @@ function returnItems = runValidationRun(functionHandle, originalNargout, varargi
         runTimeParams.generatePlots = true;
     end
     
+
     %% Call the validation function
     functionHandle(runTimeParams);
 

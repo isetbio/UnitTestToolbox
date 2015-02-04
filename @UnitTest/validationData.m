@@ -1,11 +1,9 @@
 % Method to add new data to the validation data struct
 function data = validationData(varargin)
     
-    % Get current project name
-    theProjectName = getpref('UnitTest', 'projectName');
+    persistent validationData
     
     data = [];
-    persistent validationData
     
     if ischar(varargin{1}) && ischar(varargin{2}) && (strcmp(varargin{1}, 'command')) && (strcmp(varargin{2}, 'init'))
         validationData = struct();
@@ -14,6 +12,12 @@ function data = validationData(varargin)
     
     if ischar(varargin{1}) && ischar(varargin{2}) && (strcmp(varargin{1}, 'command')) && (strcmp(varargin{2}, 'return'))
         data = validationData;
+        return;
+    end
+    
+    if (getpref('UnitTest', 'inStandAloneMode'))
+        % this is the case when we run in stand-alone mode, so we do not
+        % want to do anything else here
         return;
     end
     
@@ -38,6 +42,8 @@ function data = validationData(varargin)
             validationData.hashData.(fieldName) = roundCellArray(fieldValue);
         elseif (ischar(fieldValue))
             % only add string field if we are comparing them
+            % get current project name
+            theProjectName = getpref('UnitTest', 'projectName');
             compareStringFields = getpref(theProjectName, 'compareStringFields');
             if (compareStringFields)
                 validationData.hashData.(fieldName) = fieldValue;

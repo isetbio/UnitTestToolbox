@@ -7,6 +7,11 @@ function initializePrefs(initMode)
     
     % Get current project name
     theProjectName = getpref('UnitTest', 'projectName');
+    if ispref(theProjectName, 'projectSpecificOptions')
+       projectSpecificOptions = getpref(theProjectName, 'projectSpecificOptions');
+    else
+       error('\nProjectSpecificOptions do not exist for project ''%s''. Did you run the ''setProjectSpecificUnitTestPreferences.m'' script for ''%s''? \n', theProjectName,theProjectName); 
+    end
     
     if (strcmp(initMode, 'reset'))
         rmpref(theProjectName);
@@ -67,29 +72,14 @@ function initializePrefs(initMode)
         setpref(theProjectName, 'compareStringFields',  value); 
     end
     
-    
-    if (~ispref(theProjectName, 'validationRootDir'))  || (strcmp(initMode, 'reset'))
-        index = find(strcmp(UnitTest.validationOptionNames, 'validationRootDir'));
-        value = UnitTest.validationOptionDefaultValues{index};
-        setpref(theProjectName, 'validationRootDir',  value); 
+    % Now the project-specific preferences
+    preferenceNames = fieldnames(projectSpecificOptions);
+    for k = 1:numel(preferenceNames)
+        thePreferenceName = preferenceNames{k};
+        setpref(theProjectName, thePreferenceName,  projectSpecificOptions.(thePreferenceName));
     end
     
-    if (~ispref(theProjectName, 'clonedWikiLocation'))  || (strcmp(initMode, 'reset'))
-        index = find(strcmp(UnitTest.validationOptionNames, 'clonedWikiLocation'));
-        value = UnitTest.validationOptionDefaultValues{index};
-        setpref(theProjectName, 'clonedWikiLocation',  value); 
-    end
-    
-    if (~ispref(theProjectName, 'clonedGhPagesLocation'))  || (strcmp(initMode, 'reset'))
-        index = find(strcmp(UnitTest.validationOptionNames, 'clonedGhPagesLocation'));
-        value = UnitTest.validationOptionDefaultValues{index};
-        setpref(theProjectName, 'clonedGhPagesLocation',  value); 
-    end
-    
-    if (~ispref(theProjectName, 'githubRepoURL'))  || (strcmp(initMode, 'reset'))
-        index = find(strcmp(UnitTest.validationOptionNames, 'githubRepoURL'));
-        value = UnitTest.validationOptionDefaultValues{index};
-        setpref(theProjectName, 'githubRepoURL',  value); 
-    end
+    % restore the 'projectSpecificOptions'
+    setpref(theProjectName, 'projectSpecificOptions', projectSpecificOptions);
     
 end

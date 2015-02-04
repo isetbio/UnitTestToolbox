@@ -19,10 +19,23 @@ function setValidationOptions(obj,varargin)
     % Ensure params have valid values
     checkValidationParams(obj.validationParams);
     
+    % Get current project name
+    theProjectName = getpref('UnitTest', 'projectName');
+    
     if strcmp(obj.validationParams.type, 'FAST')
-        obj.validationDataDir   = fullfile(obj.rootDir, 'data', 'fast', filesep);
+        alternateFastDataDir = getpref(theProjectName, 'alternateFastDataDir');
+        if (isempty(alternateFastDataDir))
+            obj.validationDataDir = fullfile(obj.rootDir, 'data', 'fast', filesep);
+        else
+            obj.validationDataDir = alternateFastDataDir;
+        end
     else
-        obj.validationDataDir   = fullfile(obj.rootDir, 'data', 'full', filesep);
+        alternateFullDataDir = getpref(theProjectName, 'alternateFullDataDir');
+        if (isempty(alternateFullDataDir))
+            obj.validationDataDir = fullfile(obj.rootDir, 'data', 'full', filesep);
+        else
+            obj.validationDataDir = alternateFullDataDir;
+        end
     end
     
     % Ensure directories exist, and generate them if they do not

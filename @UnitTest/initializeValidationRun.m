@@ -1,6 +1,6 @@
-function runTimeParams = initializeValidationRun(original_nargin, varargin)  
+function runTimeParams = initializeValidationRun(varargin)  
     % Initialize run params
-    runTimeParams = initializeRunTimeParams(original_nargin, varargin);
+    runTimeParams = initializeRunTimeParams(varargin);
     
     % Initialize validation record
     UnitTest.validationRecord('command', 'init');  
@@ -12,14 +12,14 @@ function runTimeParams = initializeValidationRun(original_nargin, varargin)
     UnitTest.extraData('command', 'init');
 end
 
-function runParams = initializeRunTimeParams(original_nargin, varargin)
+function runParams = initializeRunTimeParams(varargin)
         
     for k = 1:numel(UnitTest.runTimeOptionNames)
        eval(sprintf('defaultParams.%s = UnitTest.runTimeOptionDefaultValues{k};', UnitTest.runTimeOptionNames{k}));
     end
     
-    if (original_nargin > 0)
-        assert(nargin == 2);
+    if (getpref('UnitTest', 'inStandAloneMode') == false)
+        assert(nargin == 1);
         
         runParamsPassed = varargin{1};
         runParamsPassed = runParamsPassed{1};
@@ -60,7 +60,7 @@ function runParams = initializeRunTimeParams(original_nargin, varargin)
             end
         end
     else
-       % This is the case where the script is called directly, not from a
+       % Script is run in stand-alone mode, not from a
        % UnitTest validation session, or when no argument is passed
        runParams = defaultParams; 
        runParams.printValidationReport  = true;
