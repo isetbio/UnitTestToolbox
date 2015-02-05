@@ -15,8 +15,11 @@ classdef UnitTest < handle
         % directed
         htmlDir;
         
-        % Path to  validation data directory
-        validationDataDir;
+        % Path to full validation data directory
+        fullValidationDataDir;
+        
+        % Path to fast validation data directory
+        fastValidationDataDir;
         
         % results of current validation session
         validationSessionRunTimeExceptions;

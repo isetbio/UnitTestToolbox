@@ -4,11 +4,11 @@ function initializePrefs(initMode)
     if (nargin == 0)
         initMode = 'none';
     end
-    
+
     % Get current project name
     theProjectName = getpref('UnitTest', 'projectName');
     if ispref(theProjectName, 'projectSpecificPreferences')
-       projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences')
+       projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences');
     else
        error('\nProjectSpecificPreferences do not exist for project ''%s''. Did you run the ''setProjectSpecificUnitTestPreferences.m'' script for ''%s''? \n', theProjectName,theProjectName); 
     end

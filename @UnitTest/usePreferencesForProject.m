@@ -3,7 +3,6 @@ function usePreferencesForProject(theProjectName)
 
     if ((nargin ~= 1) || (~ischar(theProjectName)))
         error('''UnitTest.usePreferencesForProject()'' requires a character string as its only argument');
-        return;
     end
     
     setpref('UnitTest', 'projectName', theProjectName);

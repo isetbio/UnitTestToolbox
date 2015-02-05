@@ -72,10 +72,10 @@ function validate(obj, vScriptsToRunList)
         if (exist(scriptName, 'file') == 2)
             % Construct path strings
             htmlDirectory                       = fullfile(obj.htmlDir, scriptSubDirectory, sprintf('%s_HTML', smallScriptName));
-            fullLocalValidationHistoryDataFile  = fullfile(obj.validationDataDir, scriptSubDirectory, sprintf('%s_FullValidationDataHistory.mat', smallScriptName));
-            fastLocalValidationHistoryDataFile  = fullfile(obj.validationDataDir, scriptSubDirectory, sprintf('%s_FastValidationDataHistory.mat', smallScriptName));
-            fullLocalGroundTruthHistoryDataFile = fullfile(obj.validationDataDir, scriptSubDirectory, sprintf('%s_FullGroundTruthDataHistory.mat', smallScriptName)); 
-            fastLocalGroundTruthHistoryDataFile = fullfile(obj.validationDataDir, scriptSubDirectory, sprintf('%s_FastGroundTruthDataHistory.mat', smallScriptName));
+            fullLocalValidationHistoryDataFile  = fullfile(obj.fullValidationDataDir, scriptSubDirectory, sprintf('%s_FullValidationDataHistory.mat', smallScriptName));
+            fastLocalValidationHistoryDataFile  = fullfile(obj.fastValidationDataDir, scriptSubDirectory, sprintf('%s_FastValidationDataHistory.mat', smallScriptName));
+            fullLocalGroundTruthHistoryDataFile = fullfile(obj.fullValidationDataDir, scriptSubDirectory, sprintf('%s_FullGroundTruthDataHistory.mat', smallScriptName)); 
+            fastLocalGroundTruthHistoryDataFile = fullfile(obj.fastValidationDataDir, scriptSubDirectory, sprintf('%s_FastGroundTruthDataHistory.mat', smallScriptName));
         else
             error('A file named ''%s'' does not exist in the path.', scriptName);
         end
@@ -94,20 +94,25 @@ function validate(obj, vScriptsToRunList)
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FAST')
-            % Create validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.validationDataDir, scriptSubDirectory);
+            % Create fast validationData sub directory if it does not exist;
+            obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FULL')
-            % Create validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.validationDataDir, scriptSubDirectory);
+            % Create fast validationData sub directory if it does not exist;
+            obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            % Create full validationData sub directory if it does not exist;
+            obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'PUBLISH')
-            % Create validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.validationDataDir, scriptSubDirectory);
+            % Create fast validationData sub directory if it does not exist;
+            obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            % Create full validationData sub directory if it does not exist;
+            obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
             % Create HTML sub directory if it does not exist;
             obj.generateDirectory(obj.htmlDir, scriptSubDirectory)
             % Critical: Assign the params variable to the base workstation
@@ -170,8 +175,7 @@ function validate(obj, vScriptsToRunList)
                 validationFundamentalFailureFlag = validationReport{1}{3};
             end
         end
-        
-        
+
         if (obj.validationParams.verbosity > 0) 
             % Update the command line output
             if (validationFailedFlag)
@@ -191,7 +195,6 @@ function validate(obj, vScriptsToRunList)
             end
         end
         
-        
         if (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')) 
             if ( (strcmp(validationParams.type, 'FAST'))  && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
@@ -199,11 +202,21 @@ function validate(obj, vScriptsToRunList)
             end
         
             if ( (strcmp(validationParams.type, 'FULL')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
+                % 'FAST' mode validation
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationParams, validationData);
+                if (obj.validationParams.verbosity > 1) 
+                    fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
+                end
                 % 'FULL' mode validation
                 doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationParams, validationData, extraData);
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
+                % 'FAST' mode validation
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationParams, validationData);
+                if (obj.validationParams.verbosity > 1) 
+                    fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
+                end
                 % 'FULL' mode validation
                 doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationParams, validationData, extraData); 
                 
@@ -267,8 +280,6 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
         validationData.hashData = struct();
     end
     
-    
-    
     % Generate SHA256 hash from the validationData.hashData
     % substruct, which is a truncated copy of the data to 12-decimal digits
     hashSHA25 = obj.generateSHA256Hash(validationData.hashData);
@@ -314,7 +325,6 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
         end
     end
            
-
     if (~groundTruthFastValidationFailed)
         if (validationParams.updateValidationHistory)
             % save/append to LocalValidationHistoryDataFile
@@ -345,8 +355,7 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
             end
             obj.exportData(dataFileName, hashSHA25, struct());
         end
-    end % (~groundTruthFastValidationFailed)  
-                
+    end % (~groundTruthFastValidationFailed)             
 end
 
 

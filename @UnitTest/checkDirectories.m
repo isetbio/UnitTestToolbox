@@ -11,10 +11,15 @@ function checkDirectories(obj)
     
     % Check if validationData directory exists and create it, if it does not exist
     if ~(strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
-        if (~exist(obj.validationDataDir, 'dir'))
-            mkdir(obj.validationDataDir);
+        if (~exist(obj.fullValidationDataDir, 'dir'))
+            mkdir(obj.fullValidationDataDir);
         end
-        addpath(obj.validationDataDir);
+        addpath(obj.fullValidationDataDir);
+        
+        if (~exist(obj.fastValidationDataDir, 'dir'))
+            mkdir(obj.fastValidationDataDir);
+        end
+        addpath(obj.fastValidationDataDir);
     end
 end
 
