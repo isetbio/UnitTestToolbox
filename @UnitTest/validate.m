@@ -1,24 +1,26 @@
 % Main validation engine
 function validate(obj, vScriptsToRunList)
     
-    if (obj.validationParams.verbosity > -1)
+    % get validation params
+    validationParams = obj.validationParams;
+    
+    if (validationParams.verbosity > -1)
         fprintf('\n------------------------------------------------------------------------------------------------------------\n');
-        fprintf('Running in ''%s'' mode with ''%s'' runtime hehavior and verbosity level = ''%s''.', obj.validationParams.type, obj.validationParams.onRunTimeError, UnitTest.validVerbosityLevels{obj.validationParams.verbosity+1});
+        fprintf('Running in ''%s'' mode with ''%s'' runtime hehavior and verbosity level = ''%s''.', validationParams.type, validationParams.onRunTimeError, UnitTest.validVerbosityLevels{validationParams.verbosity+1});
     end
     
     % Parse the scripts list to ensure it is valid
     obj.vScriptsList = obj.parseScriptsList(vScriptsToRunList);
     
-    if (obj.validationParams.verbosity > 1) 
+    if (validationParams.verbosity > 1) 
         fprintf('\nWill validate %d scripts.', numel(obj.vScriptsList)); 
     end
     
-    if (obj.validationParams.verbosity > -1)
+    if (validationParams.verbosity > -1)
         fprintf('\n------------------------------------------------------------------------------------------------------------\n');
     end
     
-    % get validation params
-    validationParams = obj.validationParams;
+    
     
     %Ensure that needed directories exist, and generates them if they do not
     obj.checkDirectories();
@@ -48,7 +50,7 @@ function validate(obj, vScriptsToRunList)
         % form a URL for it
         urlToScript =  sprintf('<a href="matlab: matlab.desktop.editor.openAndGoToFunction(which(''%s''),'''')">''%s''</a>', smallScriptName, smallScriptName);
         
-        if (obj.validationParams.verbosity > 0) 
+        if (validationParams.verbosity > 0) 
             % print it in the command line
             fprintf('\n[%3d] %s\n', scriptIndex, urlToScript);
         end
@@ -57,13 +59,13 @@ function validate(obj, vScriptsToRunList)
         if (numel(scriptListEntry) == 2)
             scriptRunParams = scriptListEntry{2};
             % make sure we do not generate plots in RUNTIME_ERRORS_ONLY mode
-            if (strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
+            if (strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY'))
                 scriptRunParams.generatePlots = false;
             end
         else % Use default prefs
             scriptRunParams = [];
             
-            if (strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
+            if (strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY'))
                 scriptRunParams.generatePlots = false;
             end
         end
@@ -137,12 +139,12 @@ function validate(obj, vScriptsToRunList)
             command = sprintf('try \n\t%s  \n\t exceptionRaisedFlag = false; \ncatch err \n\t exceptionRaisedFlag = true;\n\t validationReport{1} = {sprintf(''exception raised with message: %%s'', err.message), true, false};  \n\t rethrow(err);  \nend', commandString);
         end
         
-        if (obj.validationParams.verbosity > 5)
+        if (validationParams.verbosity > 5)
             fprintf('\nRunning with ');
             eval('scriptRunParams');
         end
         
-        if (obj.validationParams.verbosity > 4)
+        if (validationParams.verbosity > 4)
            fprintf('\nExecuting:\n%s\n', command); 
         end
         
@@ -176,7 +178,7 @@ function validate(obj, vScriptsToRunList)
             end
         end
 
-        if (obj.validationParams.verbosity > 0) 
+        if (validationParams.verbosity > 0) 
             % Update the command line output
             if (validationFailedFlag)
                 if (validationFundamentalFailureFlag)
@@ -198,27 +200,27 @@ function validate(obj, vScriptsToRunList)
         if (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')) 
             if ( (strcmp(validationParams.type, 'FAST'))  && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationParams, validationData);
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData);
             end
         
             if ( (strcmp(validationParams.type, 'FULL')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationParams, validationData);
-                if (obj.validationParams.verbosity > 1) 
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData);
+                if (validationParams.verbosity > 1) 
                     fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                 end
                 % 'FULL' mode validation
-                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationParams, validationData, extraData);
+                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData);
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationParams, validationData);
-                if (obj.validationParams.verbosity > 1) 
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData);
+                if (validationParams.verbosity > 1) 
                     fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                 end
                 % 'FULL' mode validation
-                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationParams, validationData, extraData); 
+                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData); 
                 
                 % Construct sectionData for github wiki
                 sectionName = scriptSubDirectory;
@@ -232,14 +234,14 @@ function validate(obj, vScriptsToRunList)
                 end
                 obj.sectionData(sectionName) = s;
                 
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tReport published in  : ''%s''\n', htmlDirectory);
                 end
             end    
         end  % validationParams.type != 'RUNTIME_ERRORS_ONLY'      
         
         
-        if (obj.validationParams.verbosity > 1) && (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY'))
+        if (validationParams.verbosity > 1) && (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY'))
             UnitTest.printValidationReport(validationReport); 
         end
         
@@ -269,12 +271,13 @@ end
 
 
 
-function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationParams, validationData)
+function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile,  validationData)
 
+    validationParams = obj.validationParams;
     groundTruthFastValidationFailed = false;
     
     if (~isfield(validationData, 'hashData'))
-        if (obj.validationParams.verbosity > 1) 
+        if (validationParams.verbosity > 1) 
             fprintf('\tNote (*)             : script does not store any validation data.\n');
         end
         validationData.hashData = struct();
@@ -290,26 +293,26 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
             
     if (exist(dataFileName, 'file') == 2)
         [groundTruthValidationData, ~, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
-        if (obj.validationParams.verbosity > 3)
+        if (validationParams.verbosity > 3)
            fprintf('\tGround truth  file   : %s\n', dataFileName); 
         end
         if (strcmp(groundTruthValidationData, hashSHA25))
-            if (obj.validationParams.verbosity > 0) 
+            if (validationParams.verbosity > 0) 
                 fprintf('\tFast validation      : PASSED against ground truth data of %s.\n', groundTruthTime);
-                if (obj.validationParams.verbosity > 2) 
+                if (validationParams.verbosity > 2) 
                     fprintf('\t > Ground truth info : %30s / %s, MATLAB %s by ''%s''\n', hostInfo.computerAddress, hostInfo.computer, hostInfo.matlabVersion, hostInfo.userName);
                     fprintf('\t > Local host info   : %30s / %s, MATLAB %s by ''%s''\n', obj.hostInfo.computerAddress, obj.hostInfo.computer, obj.hostInfo.matlabVersion, obj.hostInfo.userName);
                 end
             end
-            if (obj.validationParams.verbosity > 2) 
+            if (validationParams.verbosity > 2) 
                 fprintf('\tData hash key        : %s\n', hashSHA25);
             end
 
             groundTruthFastValidationFailed = false;
         else
-            if (obj.validationParams.verbosity > 0) 
+            if (validationParams.verbosity > 0) 
                 fprintf(2,'\tFast validation      : FAILED against ground truth data of %s.\n', groundTruthTime);
-                if (obj.validationParams.verbosity > 2) 
+                if (validationParams.verbosity > 2) 
                     fprintf(2,'\t > Ground truth info : %30s / %s, MATLAB %s by ''%s''\n', hostInfo.computerAddress, hostInfo.computer, hostInfo.matlabVersion, hostInfo.userName);
                     fprintf(2,'\t > Local host info   : %30s / %s, MATLAB %s by ''%s''\n', obj.hostInfo.computerAddress, obj.hostInfo.computer, obj.hostInfo.matlabVersion, obj.hostInfo.userName);
                 end
@@ -320,7 +323,7 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
         end
     else
         forceUpdateGroundTruth = true;
-        if (obj.validationParams.verbosity > 1) 
+        if (validationParams.verbosity > 1) 
             fprintf('\tFast validation      : no ground truth dataset exists. Generating one. \n');
         end
     end
@@ -330,11 +333,11 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
             % save/append to LocalValidationHistoryDataFile
             dataFileName = fastLocalValidationHistoryDataFile;
             if (exist(dataFileName, 'file') == 2)
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tSHA-256 hash key     : %s, appended to ''%s''\n', hashSHA25, dataFileName);
                 end
             else
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tSHA-256 hash key     : %s, written to ''%s''\n', hashSHA25, dataFileName);
                 end
             end
@@ -345,11 +348,11 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
         if (validationParams.updateGroundTruth) || (forceUpdateGroundTruth)
             dataFileName = fastLocalGroundTruthHistoryDataFile;
             if (exist(dataFileName, 'file') == 2)
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tSHA-256 hash key     : %s, appended to ''%s''\n', hashSHA25, dataFileName);
                 end
             else
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tSHA-256 hash key     : %s, written to ''%s''\n', hashSHA25, dataFileName);
                 end
             end
@@ -359,8 +362,9 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
 end
 
 
-function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationParams, validationData, extraData)
+function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData)
 
+    validationParams = obj.validationParams;
     groundTruthFullValidationFailed = false;
     
     % Load and check value stored in LocalGroundTruthHistoryDataFile 
@@ -368,7 +372,7 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
     forceUpdateGroundTruth = false;
 
     if (isempty(fieldnames(validationData)))
-        if (obj.validationParams.verbosity > 1) 
+        if (validationParams.verbosity > 1) 
             fprintf('\tNote (*)             : script does not store any validation data.\n');
         end
     end
@@ -380,7 +384,7 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
                 
     if (exist(dataFileName, 'file') == 2)
         [groundTruthValidationData, groundTruthExtraData, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
-        if (obj.validationParams.verbosity > 3)
+        if (validationParams.verbosity > 3)
            fprintf('\tGround truth  file   : %s\n', dataFileName); 
         end
         % Compare validation data
@@ -388,18 +392,18 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
             obj.structsAreSimilar(groundTruthValidationData, validationData);
 
         if (structsAreSimilarWithinSpecifiedTolerance)
-            if (obj.validationParams.verbosity > 0) 
+            if (validationParams.verbosity > 0) 
                 fprintf('\tFull validation      : PASSED against ground truth data of %s.\n', groundTruthTime);
-                if (obj.validationParams.verbosity > 2) 
+                if (validationParams.verbosity > 2) 
                     fprintf('\t > Ground truth info : %30s / %s, MATLAB %s by ''%s''\n', hostInfo.computerAddress, hostInfo.computer, hostInfo.matlabVersion, hostInfo.userName);
                     fprintf('\t > Local host info   : %30s / %s, MATLAB %s by ''%s''\n', obj.hostInfo.computerAddress, obj.hostInfo.computer, obj.hostInfo.matlabVersion, obj.hostInfo.userName);
                 end
             end
             groundTruthFullValidationFailed = false;
         else
-            if (obj.validationParams.verbosity > 0) 
+            if (validationParams.verbosity > 0) 
                 fprintf(2,'\tFull validation      : FAILED against ground truth data of %s.\n', groundTruthTime);
-                if (obj.validationParams.verbosity > 2) 
+                if (validationParams.verbosity > 2) 
                     fprintf(2,'\t > Ground truth info : %-30s / %s, MATLAB %s by ''%s''\n', hostInfo.computerAddress, hostInfo.computer, hostInfo.matlabVersion, hostInfo.userName);
                     fprintf(2,'\t > Local host info   : %-30s / %s, MATLAB %s by ''%s''\n', obj.hostInfo.computerAddress, obj.hostInfo.computer, obj.hostInfo.matlabVersion, obj.hostInfo.userName);
                 end
@@ -407,7 +411,7 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
             groundTruthFullValidationFailed = true;
 
             % print info about mismatched fields
-            if (obj.validationParams.verbosity > 0) 
+            if (validationParams.verbosity > 0) 
                 for k = 1:numel(mismatchReport)
                     fprintf(2,'\t[data mismatch %2d]   : %s\n ', k, char(mismatchReport{k}));
                 end
@@ -415,7 +419,7 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
         end
 
         % extra data
-        if (obj.validationParams.verbosity > 3) 
+        if (validationParams.verbosity > 3) 
             if (isempty(fieldnames(extraData)))
                 fprintf('\tNote (*)             : script does not store any extra data.\n');
             end
@@ -440,11 +444,11 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
 
     else
         forceUpdateGroundTruth = true;
-        if (obj.validationParams.verbosity > 0) 
+        if (validationParams.verbosity > 0) 
             fprintf('\tFull validation      : no ground truth dataset exists. Generating one. \n');
         end
 
-        if (obj.validationParams.verbosity > 3) 
+        if (validationParams.verbosity > 3) 
             if (isempty(fieldnames(extraData)))
                 fprintf('\tNote (*)             : script does not store any extra data.\n');
             end
@@ -456,11 +460,11 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
             % save/append to LocalValidationHistoryDataFile
             dataFileName = fullLocalValidationHistoryDataFile;
             if (exist(dataFileName, 'file') == 2)
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tFull validation data : appended to ''%s''\n', dataFileName);
                 end
             else
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tFull validation data : written to ''%s''\n', dataFileName);
                 end
             end
@@ -471,11 +475,11 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
         if (validationParams.updateGroundTruth) || (forceUpdateGroundTruth)
             dataFileName = fullLocalGroundTruthHistoryDataFile;
             if (exist(dataFileName, 'file') == 2)
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tFull validation data : appended to ''%s''\n', dataFileName);
                 end
             else
-                if (obj.validationParams.verbosity > 1) 
+                if (validationParams.verbosity > 1) 
                     fprintf('\tFull validation data : written to ''%s''\n', dataFileName);
                 end
             end
