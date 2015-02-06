@@ -49,11 +49,13 @@ function data = validationData(varargin)
                 validationData.hashData.(fieldName) = fieldValue;
                 %fprintf('ADDING CHAR FIELD %s TO HASH DATA', fieldName); 
             else
+                validationData.hashData.(fieldName) = '';
                 %fprintf('NOT ADDING CHAR FIELD %s TO HASH DATA', fieldName); 
             end
+        elseif (islogical(fieldValue))
+            validationData.hashData.(fieldName) = fieldValue;
         else
-            class(fieldValue)
-            error('Do not know how to round this class type');
+            error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', fieldName, class(fieldValue));
             %validationData.hashData.(fieldName) = fieldValue;
         end
  
@@ -81,11 +83,8 @@ function s = roundStruct(oldStruct)
         elseif ischar(fieldValue)
             % Get current project name
             theProjectName = getpref('UnitTest', 'projectName');
-            
-            % only add string field if we are comparing them
             compareStringFields = getpref(theProjectName, 'compareStringFields');
             if (compareStringFields)
-                s.(structFieldNames{k}) = fieldValue;
                 %fprintf('ADDING CHAR FIELD %s TO HASH DATA', structFieldNames{k}); 
             else
                 s.(structFieldNames{k}) = '';
@@ -95,9 +94,10 @@ function s = roundStruct(oldStruct)
             s.(structFieldNames{k}) = UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
         elseif iscell(fieldValue)
             s.(structFieldNames{k}) = roundCellArray(fieldValue);
+        elseif (islogical(fieldValue))
+            s.(structFieldNames{k}) = fieldValue;
         else
-            class(fieldValue)
-            error('Do not know how to round this class type');
+            error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', structFieldNames{k}, class(fieldValue));
         end
     end
     
@@ -107,6 +107,7 @@ end
 % Method to recursive round a cellArray
 function cellArray = roundCellArray(oldCellArray)
     cellArray = oldCellArray;
+    
     for k = 1:numel(cellArray)
         fieldValue = cellArray{k};
         
@@ -114,8 +115,6 @@ function cellArray = roundCellArray(oldCellArray)
         if ischar(fieldValue)
             % Get current project name
             theProjectName = getpref('UnitTest', 'projectName');
-    
-            % only add string field if we are comparing them
             compareStringFields = getpref(theProjectName, 'compareStringFields');
             if (compareStringFields)
             else
@@ -130,8 +129,17 @@ function cellArray = roundCellArray(oldCellArray)
         % Cells
         elseif (iscell(fieldValue))
             cellArray{k} = roundCellArray(fieldValue);
+            
+        % Logical
+        elseif (islogical(fieldValue))
+            cellArray{k} = fieldValue;
+            
+        % Struct
+         elseif (isstruct(fieldValue))
+             cellArray{k} = roundStruct(fieldValue);
+            
         else
-            fprintf(2,'UnitTest.validatioData.roundCellArray: non-char, non-numeric cell array rounding not implemented\n');
+            error('Do not know how to round cell entry which is of class type:''%s''. ',  class(fieldValue));
         end
     end
 end
