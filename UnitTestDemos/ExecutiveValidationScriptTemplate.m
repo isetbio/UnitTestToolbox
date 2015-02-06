@@ -4,7 +4,7 @@ function ExecutiveValidationScriptTemplate
     % Use preferences for the 'isetbioValidation' project
     UnitTest.usePreferencesForProject('isetbioValidation', 'reset');
 
-    %% Change some preferences:
+    %% Change some runtime preferences:
     %% Whether to update the histories of validation and ground truth data sets
     UnitTest.setPref('updateValidationHistory', false);
     UnitTest.setPref('updateGroundTruth', false);
