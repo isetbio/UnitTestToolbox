@@ -1,14 +1,8 @@
 function ExecutiveValidationScriptTemplate
 %
 
-    %% We will use preferences for the 'isetbioValidation' project - this is project specific
-    UnitTest.usePreferencesForProject('isetbioValidation');
-
-    %% Initialize @UnitTest preferences
-    UnitTest.initializePrefs();
-    
-    %% Optionally, reset prefs to the default values
-    UnitTest.initializePrefs('reset');
+    % Use preferences for the 'isetbioValidation' project
+    UnitTest.usePreferencesForProject('isetbioValidation', 'reset');
 
     %% Change some preferences:
     %% Whether to update the histories of validation and ground truth data sets
