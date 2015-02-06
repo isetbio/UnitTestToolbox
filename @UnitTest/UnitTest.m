@@ -176,10 +176,7 @@ classdef UnitTest < handle
         runValidationSession(vScriptsList, desiredMode, verbosity);
         
         % Method to select project-specific preferences 
-        usePreferencesForProject(projectName);
-    
-        % Method to initalize prefs for the current project
-        initializePrefs(initMode);
+        usePreferencesForProject(projectName, initMode);
         
         % Method to set a preference for the current project
         setPref(preferenceName, value);

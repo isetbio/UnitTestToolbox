@@ -3,10 +3,9 @@ function validate(obj, vScriptsToRunList)
     
     % get validation params
     validationParams = obj.validationParams;
-    
     if (validationParams.verbosity > -1)
         fprintf('\n------------------------------------------------------------------------------------------------------------\n');
-        fprintf('Running in ''%s'' mode with ''%s'' runtime hehavior and verbosity level = ''%s''.', validationParams.type, validationParams.onRunTimeError, UnitTest.validVerbosityLevels{validationParams.verbosity+1});
+        fprintf('Running in ''%s'' mode with ''%s'' runtime hehavior and verbosity level = ''%s''.', validationParams.type, validationParams.onRunTimeError, UnitTest.validVerbosityLevels{validationParams.verbosity+2});
     end
     
     % Parse the scripts list to ensure it is valid

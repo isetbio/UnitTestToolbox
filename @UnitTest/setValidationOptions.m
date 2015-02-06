@@ -22,22 +22,6 @@ function setValidationOptions(obj,varargin)
     % Get current project name
     theProjectName = getpref('UnitTest', 'projectName');
     
-%     if strcmp(obj.validationParams.type, 'FAST')
-%         alternateFastDataDir = getpref(theProjectName, 'alternateFastDataDir');
-%         if (isempty(alternateFastDataDir))
-%             obj.validationDataDir = fullfile(obj.rootDir, 'data', 'fast', filesep);
-%         else
-%             obj.validationDataDir = alternateFastDataDir;
-%         end
-%     else
-%         alternateFullDataDir = getpref(theProjectName, 'alternateFullDataDir');
-%         if (isempty(alternateFullDataDir))
-%             obj.validationDataDir = fullfile(obj.rootDir, 'data', 'full', filesep);
-%         else
-%             obj.validationDataDir = alternateFullDataDir;
-%         end
-%     end
-    
     % Assemble name of fast validation data directory
     alternateFastDataDir = getpref(theProjectName, 'alternateFastDataDir');
     if (isempty(alternateFastDataDir))

@@ -1,13 +1,6 @@
 function ExecutiveValidationScriptTemplate
 %
-% Template executive validation script illustrating how to 
-% - set various validation preferences
-% - validate a list of scripts or a list of script directories. 
-% - conduct a validationSession with different modes
 
-    close all
-    clc
-    
     %% We will use preferences for the 'isetbioValidation' project - this is project specific
     UnitTest.usePreferencesForProject('isetbioValidation');
 
