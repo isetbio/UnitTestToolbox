@@ -20,6 +20,17 @@ function validate(obj, vScriptsToRunList)
     end
     
     
+    % Get current project name
+    theProjectName = getpref('UnitTest', 'projectName');
+    
+    % check whether we need user verification for pushing ground truth data
+    projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences');
+    if (validationParams.updateGroundTruth) 
+        if (projectSpecificPreferences.promptUserBeforePushingValidationDataToRemoteRepository)
+            obj.queryUserWhetherToPushGroundTruthDataToRepoteRepository();
+        end
+    end
+
     
     %Ensure that needed directories exist, and generates them if they do not
     obj.checkDirectories();
@@ -199,27 +210,27 @@ function validate(obj, vScriptsToRunList)
         if (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')) 
             if ( (strcmp(validationParams.type, 'FAST'))  && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData);
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData, projectSpecificPreferences);
             end
         
             if ( (strcmp(validationParams.type, 'FULL')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData);
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData, projectSpecificPreferences);
                 if (validationParams.verbosity > 1) 
                     fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                 end
                 % 'FULL' mode validation
-                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData);
+                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData, projectSpecificPreferences);
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData);
+                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile, validationData, projectSpecificPreferences);
                 if (validationParams.verbosity > 1) 
                     fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                 end
                 % 'FULL' mode validation
-                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData); 
+                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData, projectSpecificPreferences); 
                 
                 % Construct sectionData for github wiki
                 sectionName = scriptSubDirectory;
@@ -251,8 +262,7 @@ function validate(obj, vScriptsToRunList)
     end % scriptIndex
     
     % Close any remaining non-data mismatch figures
-    % Get current project name
-    theProjectName = getpref('UnitTest', 'projectName');
+    
     
     if (~isempty(scriptRunParams)) && (isfield(scriptRunParams, 'closeFigsOnInit'))
         closeFigsOnExit = scriptRunParams.closeFigsOnInit;
@@ -270,7 +280,7 @@ end
 
 
 
-function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile,  validationData)
+function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalValidationHistoryDataFile,  validationData, projectSpecificPreferences)
 
     validationParams = obj.validationParams;
     groundTruthFastValidationFailed = false;
@@ -333,35 +343,41 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, fastLocalVal
             dataFileName = fastLocalValidationHistoryDataFile;
             if (exist(dataFileName, 'file') == 2)
                 if (validationParams.verbosity > 1) 
-                    fprintf('\tSHA-256 hash key     : %s, appended to ''%s''\n', hashSHA25, dataFileName);
+                    fprintf('\tSHA-256 hash key     : %s, appended to existing validation history (''%s'')\n', hashSHA25, dataFileName);
                 end
             else
                 if (validationParams.verbosity > 1) 
-                    fprintf('\tSHA-256 hash key     : %s, written to ''%s''\n', hashSHA25, dataFileName);
+                    fprintf('\tSHA-256 hash key     : %s, generated new validation data set (''%s'')\n', hashSHA25, dataFileName);
                 end
             end
+            % this is the local validation history, so we do not check the state of obj.userOKwithPushingGroundTruthDataToRemoteRepository
             obj.exportData(dataFileName, hashSHA25, struct());
         end
 
         % save/append to LocalGroundTruthHistoryDataFile 
         if (validationParams.updateGroundTruth) || (forceUpdateGroundTruth)
-            dataFileName = fastLocalGroundTruthHistoryDataFile;
-            if (exist(dataFileName, 'file') == 2)
-                if (validationParams.verbosity > 1) 
-                    fprintf('\tSHA-256 hash key     : %s, appended to ''%s''\n', hashSHA25, dataFileName);
+            
+            % this is the local validation history, so we do  check the state of obj.userOKwithPushingGroundTruthDataToRemoteRepository
+            if ((obj.userOKwithPushingGroundTruthDataToRemoteRepository) || (projectSpecificPreferences.promptUserBeforePushingValidationDataToRemoteRepository == false))
+                
+                dataFileName = fastLocalGroundTruthHistoryDataFile;
+                if (exist(dataFileName, 'file') == 2)
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\tSHA-256 hash key     : %s, appended to existing ground truth history (''%s'')\n', hashSHA25, dataFileName);
+                    end
+                else
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\tSHA-256 hash key     : %s, generated new ground truth data set (''%s'')\n', hashSHA25, dataFileName);
+                    end
                 end
-            else
-                if (validationParams.verbosity > 1) 
-                    fprintf('\tSHA-256 hash key     : %s, written to ''%s''\n', hashSHA25, dataFileName);
-                end
+                obj.exportData(dataFileName, hashSHA25, struct());
             end
-            obj.exportData(dataFileName, hashSHA25, struct());
         end
     end % (~groundTruthFastValidationFailed)             
 end
 
 
-function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData)
+function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalValidationHistoryDataFile, validationData, extraData, projectSpecificPreferences)
 
     validationParams = obj.validationParams;
     groundTruthFullValidationFailed = false;
@@ -460,32 +476,34 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, fullLocalVal
             dataFileName = fullLocalValidationHistoryDataFile;
             if (exist(dataFileName, 'file') == 2)
                 if (validationParams.verbosity > 1) 
-                    fprintf('\tFull validation data : appended to ''%s''\n', dataFileName);
+                    fprintf('\tFull validation data : appended to existing validation history (''%s'')\n', dataFileName);
                 end
             else
                 if (validationParams.verbosity > 1) 
-                    fprintf('\tFull validation data : written to ''%s''\n', dataFileName);
+                    fprintf('\tFull validation data : generated new validation data set (''%s'')\n', dataFileName);
                 end
             end
+            % this is the local validation history, so we do not check the state of obj.userOKwithPushingGroundTruthDataToRemoteRepository
             obj.exportData(dataFileName, validationData, extraData);
          end
 
         % save/append to LocalGroundTruthHistoryDataFile
         if (validationParams.updateGroundTruth) || (forceUpdateGroundTruth)
-            dataFileName = fullLocalGroundTruthHistoryDataFile;
-            if (exist(dataFileName, 'file') == 2)
-                if (validationParams.verbosity > 1) 
-                    fprintf('\tFull validation data : appended to ''%s''\n', dataFileName);
+            
+            % this is the local validation history, so we do  check the state of obj.userOKwithPushingGroundTruthDataToRemoteRepository
+            if ((obj.userOKwithPushingGroundTruthDataToRemoteRepository) || (projectSpecificPreferences.promptUserBeforePushingValidationDataToRemoteRepository == false))
+                dataFileName = fullLocalGroundTruthHistoryDataFile;
+                if (exist(dataFileName, 'file') == 2)
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\tFull validation data : appended to existing ground truth history (''%s'') \n', dataFileName);
+                    end
+                else
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\tFull validation data : generated new ground truth data set (''%s'') \n', dataFileName);
+                    end
                 end
-            else
-                if (validationParams.verbosity > 1) 
-                    fprintf('\tFull validation data : written to ''%s''\n', dataFileName);
-                end
+                obj.exportData(dataFileName, validationData, extraData);
             end
-            obj.exportData(dataFileName, validationData, extraData);
         end
     end % (~groundTruthFullValidationFailed)        
 end
-
-
-

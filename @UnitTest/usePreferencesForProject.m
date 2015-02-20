@@ -91,6 +91,12 @@ function initializePrefs(initMode)
     end
     
     % Now the project-specific preferences
+
+    % safeguard mechanism for someone accidentally updating the ground truth
+    % add promptUserBeforePushingValidationDataToRemoteRepository = true;
+    projectSpecificPreferences.promptUserBeforePushingValidationDataToRemoteRepository = true;
+    setpref(theProjectName, 'projectSpecificPreferences', projectSpecificPreferences);
+    
     preferenceNames = fieldnames(projectSpecificPreferences);
     for k = 1:numel(preferenceNames)
         thePreferenceName = preferenceNames{k};

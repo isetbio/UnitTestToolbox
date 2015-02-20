@@ -54,6 +54,9 @@ classdef UnitTest < handle
         % for compatibility with eariler versions of matlab
         % set useMatfile = false.
         useMatfile = false;
+        
+        % whether the user has manually OKed to push ground truth data to remote repository
+        userOKwithPushingGroundTruthDataToRemoteRepository = false;
     end
     
     % Constant properties. These are the only properties that can be
@@ -123,6 +126,8 @@ classdef UnitTest < handle
         % Method to push published HTML directories to github
         pushToGithub(obj, vScriptsList);
         
+        % Method to query the user whether he really wants to push ground truth data to the remote repository
+        queryUserWhetherToPushGroundTruthDataToRepoteRepository(obj);
     end % public methods
     
     % Only the object itself can call these methods
