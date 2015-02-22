@@ -41,12 +41,18 @@ function pushToGithub(obj, vScriptsList)
     % cd to validationDocsDir and update it
     cd(validationDocsDir);
     
+    % set to true when having trouble synchronizing with github  
+    removeAllTargetHTMLDirs = false;
+    
     % Do a git pull (so we can push later with no conflicts)
     obj.issueGitCommand('git pull');
     
-    % rm all current HTML directories
-    system('rm -r -f *');
-        
+    if (removeAllTargetHTMLDirs)
+        % rm all current HTML directories
+        system('rm -r -f *');
+    end
+    
+    
     % cd to wikiCloneDir and update it
     cd(wikiCloneDir);
     obj.issueGitCommand('git pull');
@@ -102,22 +108,29 @@ function pushToGithub(obj, vScriptsList)
             cd(sprintf('%s', validationScriptDirectory));
         
             % synthesize the source HTML directory name
-            sourceHTMLdir = sprintf('%s/%s/%s_HTML', obj.htmlDir, validationScriptSubDir, smallScriptName);
+            sourceHTMLdir = sprintf('%s%s/%s_HTML', obj.htmlDir, validationScriptSubDir, smallScriptName);
             
             % synthesize the target HTML directory name
             targetHTMLdir = fullfile(validationDocsDir , validationScriptSubDir, smallScriptName);
             
-            % remove any existing target HTML directory
-            system(sprintf('rm -rf %s', targetHTMLdir));
-        
+            if (removeAllTargetHTMLDirs)
+                % remove any existing target HTML directory
+                system(sprintf('rm -rf %s', targetHTMLdir));
+            end
+            
             if (exist(sourceHTMLdir, 'dir') == 0)
                 fprintf(2,'\n>>>> Directory %s not found.\n>>>> Rerun validateAll(), or make sure there is no typo.\n', sourceHTMLdir);
                 return;
             end
             
+            if (exist(targetHTMLdir, 'dir') == 0)
+                fprintf('Generating target HTML dir (''%s'')\n', targetHTMLdir);
+                system(sprintf('mkdir %s', targetHTMLdir));
+            end
+            
             % mv source to target directory
-            system(sprintf('mv %s %s',  sourceHTMLdir, targetHTMLdir));
-        
+            system(sprintf('mv %s/* %s/',  sourceHTMLdir, targetHTMLdir));
+
             % get summary text from validation script.
             summaryText = getSummaryText(validationScriptName);
         
