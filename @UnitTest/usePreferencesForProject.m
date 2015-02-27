@@ -36,18 +36,6 @@ function initializePrefs(initMode)
         rmpref(theProjectName);
     end
     
-    if ~(ispref(theProjectName, 'updateGroundTruth')) || (strcmp(initMode, 'reset'))
-        index = find(strcmp(UnitTest.validationOptionNames, 'updateGroundTruth'));
-        value = UnitTest.validationOptionDefaultValues{index};
-        setpref(theProjectName, 'updateGroundTruth', value);
-    end
-    
-    if ~(ispref(theProjectName, 'updateValidationHistory'))  || (strcmp(initMode, 'reset'))
-        index = find(strcmp(UnitTest.validationOptionNames, 'updateValidationHistory'));
-        value = UnitTest.validationOptionDefaultValues{index};
-        setpref(theProjectName, 'updateValidationHistory', value);
-    end
-    
     if (~ispref(theProjectName, 'onRunTimeErrorBehavior'))  || (strcmp(initMode, 'reset'))
         index = find(strcmp(UnitTest.validationOptionNames, 'onRunTimeErrorBehavior'));
         value = UnitTest.validationOptionDefaultValues{index};
@@ -91,10 +79,6 @@ function initializePrefs(initMode)
     end
     
     % Now the project-specific preferences
-
-    % safeguard mechanism for someone accidentally updating the ground truth
-    % add promptUserBeforePushingValidationDataToRemoteRepository = true;
-    projectSpecificPreferences.promptUserBeforePushingValidationDataToRemoteRepository = true;
     setpref(theProjectName, 'projectSpecificPreferences', projectSpecificPreferences);
     
     preferenceNames = fieldnames(projectSpecificPreferences);
