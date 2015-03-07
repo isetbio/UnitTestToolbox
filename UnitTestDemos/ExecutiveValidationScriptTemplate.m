@@ -1,11 +1,9 @@
 function ExecutiveValidationScriptTemplate
-%
 
     % Use preferences for the 'isetbioValidation' project
     UnitTest.usePreferencesForProject('isetbioValidation', 'reset');
 
-    %% Change some runtime preferences:
-    
+    %% Change some preferences:
     %% Run time error behavior
     % valid options are: 'rethrowExceptionAndAbort', 'catchExceptionAndContinue'
     UnitTest.setPref('onRunTimeErrorBehavior', 'catchExceptionAndContinue');
@@ -34,16 +32,11 @@ function ExecutiveValidationScriptTemplate
         % with a validation script directory and an optional struct with
         % prefs that override the corresponding isetbioValidation prefs.
         % At the moment only the 'generatePlots' pref can be overriden.
-        %
-        % We have functions that generate various stock vScriptsList, but
-        % here we do it out explicitly.
-        % 
-        % Note that the exampleScripts directory contains some scripts that
-        % intentionally fail in various ways.
         
-        % Get rootDir
+        % Get the validation rootDir
         rootDir = UnitTest.getPref('validationRootDir');
 
+        % List of script directories to validate
         vScriptsList = {...
                 {fullfile(rootDir, 'scripts', 'color')} ... 
                 {fullfile(rootDir, 'scripts', 'cones')} ... 
@@ -85,5 +78,4 @@ function ExecutiveValidationScriptTemplate
     % Run a validation session without a specified mode. You will be
     % promped to select one of the available modes.
     UnitTest.runValidationSession(vScriptsList);
-
 end
