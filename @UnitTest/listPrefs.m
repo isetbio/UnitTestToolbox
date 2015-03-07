@@ -7,7 +7,8 @@ function listPrefs
     validationPrefs = getpref(theProjectName);
     preferenceNames = fieldnames(validationPrefs);
     
-    fprintf('\n Current ''%s'' prefs:\n', theProjectName);
+    fprintf('\n%-34s : ''%s'', with the following preferences:\n', 'Current UnitTest project is set to', theProjectName);
+   
     for k = 1:numel(preferenceNames)
         value = validationPrefs.(preferenceNames{k});
         if ischar(value)
