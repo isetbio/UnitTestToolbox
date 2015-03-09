@@ -21,6 +21,9 @@ function UnitTestPreferencesTemplate
         );
 
     generatePreferenceGroup(p);
+
+    UnitTest.usePreferencesForProject(p.projectName);
+
 end
 
 function generatePreferenceGroup(p)
