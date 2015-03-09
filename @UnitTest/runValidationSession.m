@@ -55,7 +55,7 @@ function validateRunTimeErrors(vScriptsList)
                 );
             
     % ... and Go ! 
-    UnitTestOBJ.validate(vScriptsList);
+    abortValidationSession = UnitTestOBJ.validate(vScriptsList);
 end
 
 
@@ -77,7 +77,7 @@ function validateFast(vScriptsList)
                 );
             
     % ... and Go ! 
-    UnitTestOBJ.validate(vScriptsList);
+    abortValidationSession = UnitTestOBJ.validate(vScriptsList);
 end
 
 function validateFull(vScriptsList)
@@ -98,7 +98,7 @@ function validateFull(vScriptsList)
                 );
     
     % ... and Go ! 
-    UnitTestOBJ.validate(vScriptsList);    
+    abortValidationSession = UnitTestOBJ.validate(vScriptsList);    
 end
 
 
@@ -123,10 +123,12 @@ function validatePublish(vScriptsList)
                 );
             
     % ... and Go ! 
-    UnitTestOBJ.validate(vScriptsList);     
+    abortValidationSession = UnitTestOBJ.validate(vScriptsList);     
     
-    % Push published HTML directories to github
-    UnitTestOBJ.pushToGithub(vScriptsList);
+    if (abortValidationSession == false)
+        % Push published HTML directories to github
+        UnitTestOBJ.pushToGithub(vScriptsList);
+    end
     
     % Remove HTML directories
     UnitTestOBJ.removeHTMLDir();

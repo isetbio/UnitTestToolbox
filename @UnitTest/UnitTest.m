@@ -121,14 +121,14 @@ classdef UnitTest < handle
         resetValidationOptions(obj);
  
         % Main validation engine
-        validate(obj,vScriptsList);
+        abortValidationSession = validate(obj,vScriptsList);
         
         % Method to push published HTML directories to github
         pushToGithub(obj, vScriptsList);
         
         % Method to query the user whether to really generate ground truth
         % (only evoked if the validation data set is not found)
-        forceUpdateGroundTruth = queryUserWhetherToReallyGenerateGroundTruth(obj, validationMode, scriptName);
+        [forceGenerateGroundTruth, cancelRun] = queryUserWhetherToReallyGenerateGroundTruth(obj, validationMode, scriptName);
     end % public methods
     
     % Only the object itself can call these methods
@@ -138,7 +138,7 @@ classdef UnitTest < handle
         generateDirectory(obj, path, subDir);
 
         % Method ensuring that directories exist, and generates them if they do not
-        checkDirectories(obj);
+        abortValidationSession = checkDirectories(obj, projectSpecificPreferences);
         
         % Method to remove the root validationData directory
         removeValidationDataDir(obj);

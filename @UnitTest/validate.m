@@ -1,5 +1,5 @@
 % Main validation engine
-function validate(obj, vScriptsToRunList)
+function abortValidationSession = validate(obj, vScriptsToRunList)
     
     % get validation params
     validationParams = obj.validationParams;
@@ -20,24 +20,22 @@ function validate(obj, vScriptsToRunList)
     end
     
     
+    
     % Get current project name
     theProjectName = getpref('UnitTest', 'projectName');
     projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences');
     
     %Ensure that needed directories exist, and generate them if they do not
-    obj.checkDirectories();
+    abortValidationSession = false;
+    abortValidationSession = obj.checkDirectories(projectSpecificPreferences);
     
     % reset currentValidationSessionResults
     obj.validationSessionRunTimeExceptions = [];
     
-    % do not automatically generate ground truth for all scripts with missing ground truth data set
-    obj.forceGenerateFastGroundTruthForAllScripts = false;
-    obj.forceGenerateFullGroundTruthForAllScripts = false;
     
     % Go through each entry
     scriptIndex = 0;
-    abortValidationSession = false;
-    
+
     while (scriptIndex < numel(obj.vScriptsList)) && (~abortValidationSession)
         
         scriptIndex = scriptIndex + 1;
@@ -204,42 +202,47 @@ function validate(obj, vScriptsToRunList)
         if (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')) 
             if ( (strcmp(validationParams.type, 'FAST'))  && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
+                abortValidationSession = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
             end
         
             if ( (strcmp(validationParams.type, 'FULL')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
-                if (validationParams.verbosity > 1) 
-                    fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
+                abortValidationSession = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
+                if (abortValidationSession == false)
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
+                    end
+                    % 'FULL' mode validation
+                    abortValidationSession = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
                 end
-                % 'FULL' mode validation
-                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
+                
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
-                if (validationParams.verbosity > 1) 
-                    fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
-                end
-                % 'FULL' mode validation
-                doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName); 
-                
-                % Construct sectionData for github wiki
-                sectionName = scriptSubDirectory;
-                % update sectionData map
-                s = {};
-                if (isKey(obj.sectionData,sectionName ))
-                    s = obj.sectionData(sectionName);
-                    s{numel(s)+1} = scriptName;
-                else
-                    s{1} = scriptName; 
-                end
-                obj.sectionData(sectionName) = s;
-                
-                if (validationParams.verbosity > 1) 
-                    fprintf('\tReport published in  : ''%s''\n', htmlDirectory);
+                abortValidationSession = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
+                if (abortValidationSession == false)
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
+                    end
+                    % 'FULL' mode validation
+                    abortValidationSession = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName); 
+
+                    % Construct sectionData for github wiki
+                    sectionName = scriptSubDirectory;
+                    % update sectionData map
+                    s = {};
+                    if (isKey(obj.sectionData,sectionName ))
+                        s = obj.sectionData(sectionName);
+                        s{numel(s)+1} = scriptName;
+                    else
+                        s{1} = scriptName; 
+                    end
+                    obj.sectionData(sectionName) = s;
+
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\tReport published in  : ''%s''\n', htmlDirectory);
+                    end
                 end
             end    
         end  % validationParams.type != 'RUNTIME_ERRORS_ONLY'      
@@ -272,8 +275,10 @@ end
 
 
 
-function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName)
+function cancelRun = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName)
 
+    cancelRun = false;
+    
     validationParams = obj.validationParams;
     groundTruthFastValidationFailed = false;
     
@@ -331,7 +336,7 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationDa
         else
             % Check whether the user specified to generate ground truth
             if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
-                forceGenerateGroundTruth = obj.queryUserWhetherToReallyGenerateGroundTruth('FAST', smallScriptName);
+                [forceGenerateGroundTruth, cancelRun] = obj.queryUserWhetherToReallyGenerateGroundTruth('FAST', smallScriptName);
             else
                 forceGenerateGroundTruth = false;
             end
@@ -366,8 +371,10 @@ function doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationDa
 end
 
 
-function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName)
+function cancelRun = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName)
 
+    cancelRun = false;
+    
     validationParams = obj.validationParams;
     groundTruthFullValidationFailed = false;
     
@@ -437,7 +444,7 @@ function doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationDa
         else
             % Check whether the user specified to generate ground truth
             if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
-                forceGenerateGroundTruth = obj.queryUserWhetherToReallyGenerateGroundTruth('FULL', smallScriptName);
+                [forceGenerateGroundTruth, cancelRun] = obj.queryUserWhetherToReallyGenerateGroundTruth('FULL', smallScriptName);
             else
                 forceGenerateGroundTruth = false;
             end

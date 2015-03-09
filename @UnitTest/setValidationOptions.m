@@ -34,10 +34,7 @@ function setValidationOptions(obj,varargin)
         obj.fullValidationDataDir = fullfile(obj.rootDir, 'data', 'full', filesep);
     else
         obj.fullValidationDataDir = alternateFullDataDir;
-    end
-
-    % Ensure directories exist, and generate them if they do not
-    obj.checkDirectories();    
+    end   
 end
 
 function checkValidationParams(validationParams)
