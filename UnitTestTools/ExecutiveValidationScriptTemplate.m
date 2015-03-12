@@ -1,7 +1,7 @@
 function ExecutiveValidationScriptTemplate
 
-    % Use preferences for the 'isetbioValidation' project
-    UnitTest.usePreferencesForProject('isetbioValidation', 'reset');
+    % Use preferences for the 'theProjectName' project
+    UnitTest.usePreferencesForProject('theProjectName', 'reset');
 
     %% Change some preferences:
     %% Run time error behavior
@@ -22,7 +22,7 @@ function ExecutiveValidationScriptTemplate
     %% Whether to plot data that do not agree with the ground truth
     UnitTest.setPref('graphMismatchedData', true);
     
-    %% Print current values of isetbioValidation prefs
+    %% Print current values of the project's prefs
     UnitTest.listPrefs();
     
     %% What to validate
@@ -30,7 +30,7 @@ function ExecutiveValidationScriptTemplate
     if (validateAllDirs)
         % List of script directories to validate. Each entry contains a cell array with 
         % with a validation script directory and an optional struct with
-        % prefs that override the corresponding isetbioValidation prefs.
+        % prefs that override the corresponding project's prefs.
         % At the moment only the 'generatePlots' pref can be overriden.
         
         % Get the validation rootDir
@@ -62,7 +62,8 @@ function ExecutiveValidationScriptTemplate
         };
     end
     
-    %% How to validate
+    %% How to validate. Uncomment one of the following five options
+
     % Run a RUN_TIME_ERRORS_ONLY validation session
     % UnitTest.runValidationSession(vScriptsList, 'RUN_TIME_ERRORS_ONLY')
     
@@ -77,5 +78,5 @@ function ExecutiveValidationScriptTemplate
     
     % Run a validation session without a specified mode. You will be
     % promped to select one of the available modes.
-    UnitTest.runValidationSession(vScriptsList);
+    % UnitTest.runValidationSession(vScriptsList);
 end
