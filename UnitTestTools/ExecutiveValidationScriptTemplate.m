@@ -1,7 +1,7 @@
 function ExecutiveValidationScriptTemplate
 
-    % Use preferences for the 'theProjectName' project
-    UnitTest.usePreferencesForProject('theProjectName', 'reset');
+    % Use preferences for the 'theProject' project
+    UnitTest.usePreferencesForProject('theProject', 'reset');
 
     %% Change some preferences:
     %% Run time error behavior
