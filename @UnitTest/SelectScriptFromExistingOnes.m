@@ -37,7 +37,7 @@ function scriptToValidate = SelectScriptFromExistingOnes()
         end
         
     end
-    selectedScriptIndex = input(sprintf('\nEnter script no to validate/publish [%d-%d]: ', 1, totalScriptIndex));
+    selectedScriptIndex = input(sprintf('\nEnter script no. to validate/publish [%d-%d]: ', 1, totalScriptIndex));
     if (isempty(selectedScriptIndex)) || (~isnumeric(selectedScriptIndex))
         error('input must be a numeral');
     elseif (selectedScriptIndex <= 0) || (selectedScriptIndex > totalScriptIndex)
