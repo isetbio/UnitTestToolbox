@@ -221,6 +221,10 @@ classdef UnitTest < handle
         % Method to print the validationReport
         printValidationReport(validationReport);
         
+        % Method that prints all available validation scripts and asks the
+        % user to select one for validation.
+        scriptToValidate = SelectScriptFromExistingOnes();
+        
         % Method to implement an assert statement for things that should be
         % almost the same.
         assertIsZero(expression,msgString,tolerance);
