@@ -171,6 +171,7 @@ function publishProjectTutorials(p, scriptsToSkip, scriptCollection)
             position = [];
             fileContents = fscanf(tutorialsCatalogFileFID, '%c', Inf);
             position = strfind(fileContents, patternToLookUp)-1;
+            
             if (~isempty(position))
                 userName =  char(java.lang.System.getProperty('user.name'));
                 computerAddress  = char(java.net.InetAddress.getLocalHost.getHostName);
@@ -189,7 +190,7 @@ function publishProjectTutorials(p, scriptsToSkip, scriptCollection)
                 fprintf(tutorialsCatalogFileFID, '%c', newFileContents);
             else
                 % Go to the end of the file
-                fseek(validationResultsCatalogFID, 0, 'eof');
+                fseek(tutorialsCatalogFileFID, 0, 'eof');
                 % Add entry to tutorialsCatalogFile
                 fprintf(tutorialsCatalogFileFID, '* [ %s ](%s) \n',  smallScriptName, tutorialURL);  
             end
