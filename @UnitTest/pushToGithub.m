@@ -124,7 +124,7 @@ function pushToGithub(obj, vScriptsList)
             if (exist(infoFileName, 'file'))
                 fprintf(validationResultsCatalogFID,'_%s_ \n', sprintf('%s', fileread(infoFileName)));
             else
-                fprintf(validationResultsCatalogFID,'_%s_ \n', 'There is no information file (info.txt) for section ''%s''.', sectionName);
+                fprintf(validationResultsCatalogFID,'_There is no information file (info.txt) for section ''%s''_ \n', char(sectionName));
             end
         end
         
