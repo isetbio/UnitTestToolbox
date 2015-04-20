@@ -11,6 +11,10 @@
 
 function UnitTestPreferencesTemplate
 
+    % Specify root directory.  This is the top level director of the
+    % project.
+    theProjectRootDir = '/YourDirectory/YourSubdir';
+    
     % Specify project-specific preferences
     p = struct(...
             'projectName',           'theProject', ...                                                                                 % The project's name (also the preferences group name)
@@ -19,7 +23,7 @@ function UnitTestPreferencesTemplate
             'alternateFullDataDir',  '', ... % fullfile(filesep,'Users', 'Shared', 'Dropbox', 'theProjectFullValidationData'), ...          % Alternate FULL data directory location. Specify '' to use the default location, i.e., $validationRootDir/data/full
             'clonedWikiLocation',    fullfile(filesep,'Users',  'Shared', 'Matlab', 'Toolboxes', 'theProject_Wiki', 'theProject.wiki'), ... % Local path to the directory where the wiki is cloned. Only relevant for publishing tutorials.
             'clonedGhPagesLocation', fullfile(filesep,'Users',  'Shared', 'Matlab', 'Toolboxes', 'theProject_GhPages', 'theProject'), ...   % Local path to the directory where the gh-pages repository is cloned. Only relevant for publishing tutorials.
-            'githubRepoURL',         'http://theProject.github.io/theProject' ...                                                           % Github URL for the project. This is only used for publishing tutorials.
+            'githubRepoURL',         'http://theProject.github.io/theProject', ...                                                           % Github URL for the project. This is only used for publishing tutorials.
             'generateGroundTruthDataIfNotFound',   false ...                                                                                % Flag indicating whether to generate ground truth if one is not found
         );
 
