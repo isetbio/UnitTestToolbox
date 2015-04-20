@@ -3,7 +3,7 @@ function pushToGithub(obj, vScriptsList)
   
 
     fprintf('\n------------------------------------------------------------------------------------------------------------');
-    fprintf('\nPushing to hithub (%s)',  UnitTest.getPref('githubRepoURL'));
+    fprintf('\nPushing to github (%s)',  UnitTest.getPref('githubRepoURL'));
     fprintf('\n------------------------------------------------------------------------------------------------------------\n\n');
 
     
@@ -120,7 +120,12 @@ function pushToGithub(obj, vScriptsList)
         
         cd(validationScriptDirectory);
         if (numel(vScriptsList) > 1) || (isSingleFileWithNewSection)
-            fprintf(validationResultsCatalogFID,'_%s_ \n', sprintf('%s', fileread('info.txt')));
+            infoFileName = sprintf('%s/info.txt', validationScriptDirectory);
+            if (exist(infoFileName, 'file'))
+                fprintf(validationResultsCatalogFID,'_%s_ \n', sprintf('%s', fileread(infoFileName)));
+            else
+                fprintf(validationResultsCatalogFID,'_%s_ \n', 'There is no information file (info.txt) for section ''%s''.', sectionName);
+            end
         end
         
         for functionIndex = 1:numel(functionNames)
