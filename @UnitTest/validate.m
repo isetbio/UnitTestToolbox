@@ -84,7 +84,8 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             error('A file named ''%s'' does not exist in the path.', scriptName);
         end
    
-        
+        [localScriptDir,~,~] = fileparts(scriptName);
+
         % Initialize flags, reports, and validation data
         validationReport        = '';
         validationFailedFlag    = true;
@@ -150,8 +151,17 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
            fprintf('\nExecuting:\n%s\n', command); 
         end
         
+        % save current dir
+        currentDir = pwd();
+        
+        % cd to script directory
+        cd(localScriptDir);
+        
         % Run the try-catch command and capture the output in T
         T = evalc(command); 
+        
+        % back to current dir
+        cd(currentDir);
         
         % Update currentValidationSeesionResults
         obj.validationSessionRunTimeExceptions(scriptIndex) = exceptionRaisedFlag;

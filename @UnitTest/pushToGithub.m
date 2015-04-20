@@ -36,7 +36,7 @@ function pushToGithub(obj, vScriptsList)
     
     % URL on remote where the validationResultsCatalogFile lives
     % validationResultsCatalogFileURL = 'https://github.com/npcottaris/ISETBIO_ValidationDocs/wiki/ValidationResults';
-    validationResultsCatalogFileURL = sprintf('%s/ValidationResults', wikiCloneDir);
+    % validationResultsCatalogFileURL = sprintf('%s/ValidationResults', wikiCloneDir);
     
     % cd to validationDocsDir and update it
     cd(validationDocsDir);
@@ -91,7 +91,7 @@ function pushToGithub(obj, vScriptsList)
            while ~feof(validationResultsCatalogFID) 
                 tline = fgetl(validationResultsCatalogFID); 
                 if strfind(tline, patternToLookUp) > 0 
-                    fprintf('Found pattern ''%s''', patternToLookUp);
+                    %fprintf('Found pattern ''%s''', patternToLookUp);
                     position = ftell(validationResultsCatalogFID);
                 end
            end
@@ -115,10 +115,10 @@ function pushToGithub(obj, vScriptsList)
             end
             continue;
         end
-        
-        [validationScriptDirectory, ~, ~] = fileparts(which(sprintf('%s', char(functionNames{1}))));
-        
+
+        [validationScriptDirectory, ~, ~] = fileparts(char(functionNames{1}));
         cd(validationScriptDirectory);
+        
         if (numel(vScriptsList) > 1) || (isSingleFileWithNewSection)
             infoFileName = sprintf('%s/info.txt', validationScriptDirectory);
             if (exist(infoFileName, 'file'))
