@@ -121,7 +121,7 @@ classdef UnitTest < handle
         resetValidationOptions(obj);
  
         % Main validation engine
-        abortValidationSession = validate(obj,vScriptsList);
+        [abortValidationSession, vScriptsListWithNewValidationDataSet] = validate(obj,vScriptsList);
         
         % Method to push published HTML directories to github
         pushToGithub(obj, vScriptsList);
@@ -135,7 +135,7 @@ classdef UnitTest < handle
     methods (Access = private)   
         
         % Method to generate the directory path/subDir, if this directory does not exist
-        generateDirectory(obj, path, subDir);
+        directoryExistedAlready = generateDirectory(obj, path, subDir);
 
         % Method ensuring that directories exist, and generates them if they do not
         abortValidationSession = checkDirectories(obj, projectSpecificPreferences);

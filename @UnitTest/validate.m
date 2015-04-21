@@ -1,5 +1,5 @@
 % Main validation engine
-function abortValidationSession = validate(obj, vScriptsToRunList)
+function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = validate(obj, vScriptsToRunList)
     
     % get validation params
     validationParams = obj.validationParams;
@@ -26,12 +26,13 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
     projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences');
     
     %Ensure that needed directories exist, and generate them if they do not
-    abortValidationSession = false;
     abortValidationSession = obj.checkDirectories(projectSpecificPreferences);
     
     % reset currentValidationSessionResults
     obj.validationSessionRunTimeExceptions = [];
     
+    % reset list of scripts with new validation data sets
+    vScriptsListWithNewValidationDataSet = {};
     
     % Go through each entry
     scriptIndex = 0;
@@ -100,26 +101,56 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             
         elseif strcmp(validationParams.type, 'FAST')
             % Create fast validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            directoryExistedAlready = obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            
+            if (~directoryExistedAlready) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
+                % The FAST validation data set directory did not exist already, or the FAST validation data set itseld did not exist,
+                % add this script to the list of scripts that will need a second pass, and also
+                % remove the FULL validation data file for this script
+                vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
+                % generate the full validation data directory, in case it does not exist
+                obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            end
+            
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FULL')
-            % Create fast validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            
             % Create full validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            directoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            
+            if (~directoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+                % The FULL validation data set directory did not exist already, or the FULL validation data set itseld did not exist,
+                % add this script to the list of scripts that will need a second pass, and also
+                % remove the FAST validation data file for this script
+                vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
+                system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
+                % generate the fast validation data directory, in case it does not exist
+                obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            end
             
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'PUBLISH')
-            % Create fast validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            
             % Create full validationData sub directory if it does not exist;
-            obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            directoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            
+            if (~directoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+                % The FULL validation data set directory did not exist already, or the FULL validation data set itseld did not exist,
+                % add this script to the list of scripts that will need a second pass, and also
+                % remove the FAST validation data file for this script
+                vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
+                system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
+                % generate the fast validation data directory, in case it does not exist
+                obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            end
+            
+            
             % Create HTML sub directory if it does not exist;
-            obj.generateDirectory(obj.htmlDir, scriptSubDirectory)
+            obj.generateDirectory(obj.htmlDir, scriptSubDirectory);
             % Critical: Assign the params variable to the base workstation
             assignin('base', 'scriptRunParams', scriptRunParams);
             % Form publish options struct
