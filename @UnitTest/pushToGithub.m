@@ -34,24 +34,19 @@ function pushToGithub(obj, vScriptsList)
     % pointers to the corresponding html files.
     validationResultsCatalogFile = 'ValidationResults.md';
     
-    % URL on remote where the validationResultsCatalogFile lives
-    % validationResultsCatalogFileURL = 'https://github.com/npcottaris/ISETBIO_ValidationDocs/wiki/ValidationResults';
-    % validationResultsCatalogFileURL = sprintf('%s/ValidationResults', wikiCloneDir);
-    
     % cd to validationDocsDir and update it
     cd(validationDocsDir);
-    
-    % set to true when having trouble synchronizing with github  
-    removeAllTargetHTMLDirs = false;
     
     % Do a git pull (so we can push later with no conflicts)
     obj.issueGitCommand('git pull');
     
-    if (removeAllTargetHTMLDirs)
+    if (numel(vScriptsList) > 1)
         % rm all current HTML directories
         system('rm -r -f *');
     end
     
+    % set to true when having trouble synchronizing with github  
+    removeAllTargetHTMLDirs = false;
     
     % cd to wikiCloneDir and update it
     cd(wikiCloneDir);

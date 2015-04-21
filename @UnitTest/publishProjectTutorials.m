@@ -37,6 +37,14 @@ function publishProjectTutorials(p, scriptsToSkip, scriptCollection)
     % set to true when having trouble synchronizing with github  
     removeAllTargetHTMLDirs = false;
     
+    
+    if (numel(filesList) > 1)
+        system(sprintf('rm -r -f %s/*',tutorialDocsDir));
+        if (verbosity > 1)
+           fprintf('Removing previously existing dir ''%s''\n', tutorialDocsDir);
+        end
+    end
+    
   
     % generate tutorialsHTMLdir
     if (exist(tutorialDocsDir, 'dir')==7)
@@ -44,14 +52,14 @@ function publishProjectTutorials(p, scriptsToSkip, scriptCollection)
             if (verbosity > 1)
                 fprintf('Removing previously existing dir ''%s''\n', tutorialDocsDir);
             end
-            system(sprintf('rm -r -f %s',tutorialDocsDir));
-        end
-        
-        % cd to tutorialDocsDir and update it
-        cd(tutorialDocsDir);
+            system(sprintf('rm -r -f %s/*',tutorialDocsDir));
+        else
+            % cd to tutorialDocsDir and update it
+            cd(tutorialDocsDir);
     
-        % Do a git pull (so we can push later with no conflicts)
-        issueGitCommand('git pull', verbosity);
+            % Do a git pull (so we can push later with no conflicts)
+            issueGitCommand('git pull', verbosity);
+        end
     else    
         mkdir(tutorialDocsDir);
     end
