@@ -33,6 +33,7 @@ function runParams = initializeRunTimeParams(varargin)
             theProjectName = getpref('UnitTest', 'projectName');
             runParams.generatePlots   = getpref(theProjectName, 'generatePlots');
             runParams.closeFigsOnInit = getpref(theProjectName, 'closeFigsOnInit');
+            runParams.inStandAloneMode = false;
             if (runParams.closeFigsOnInit)
                 UnitTest.closeAllNonDataMismatchFigures();
             end
@@ -59,6 +60,7 @@ function runParams = initializeRunTimeParams(varargin)
                 end
             end
         end
+        runParams.inStandAloneMode = false;
     else
        % Script is run in stand-alone mode, not from a
        % UnitTest validation session, or when no argument is passed
@@ -66,6 +68,7 @@ function runParams = initializeRunTimeParams(varargin)
        runParams.printValidationReport  = true;
        runParams.generatePlots          = true;
        runParams.closeFigsOnInit        = false;
+       runParams.inStandAloneMode       = true;
     end 
     
     if (runParams.closeFigsOnInit)
