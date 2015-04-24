@@ -23,7 +23,7 @@ function publishProjectTutorials(p, scriptsToSkip, scriptCollection)
     if strcmp(scriptCollection, 'All')
         filesList = filesFullList;
     else
-        filesList = SelectSingleTutorial(filesFullList, scriptsToSkip, tutorialsSourceDir);
+        filesList = selectSingleTutorial(filesFullList, scriptsToSkip, tutorialsSourceDir);
     end
     
     sectionData = parseTutorialsDirSections(filesList, scriptsToSkip, tutorialsSourceDir);
@@ -314,7 +314,7 @@ function publishProjectTutorials(p, scriptsToSkip, scriptCollection)
     cd(rootDirectory);
 end
 
-function tutorialToPublish = SelectSingleTutorial(filesFullList, scriptsToSkip, tutorialsSourceDir)
+function tutorialToPublish = selectSingleTutorial(filesFullList, scriptsToSkip, tutorialsSourceDir)
     
     fprintf('\n\n---------------------------------------------------------------------------\n');
     fprintf('Available tutorials                                     Tutorial no. \n');
