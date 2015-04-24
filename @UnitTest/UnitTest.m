@@ -235,7 +235,5 @@ classdef UnitTest < handle
         % Method to implement an assert statement for things that should be
         % true
         assert(expression,msgString);
-        
-        varargout = QueryForMissingGroundTruthData(varargin);
     end
 end
