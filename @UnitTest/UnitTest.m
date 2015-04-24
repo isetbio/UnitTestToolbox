@@ -121,7 +121,7 @@ classdef UnitTest < handle
         resetValidationOptions(obj);
  
         % Main validation engine
-        [abortValidationSession, vScriptsListWithNewValidationDataSet] = validate(obj,vScriptsList);
+        abortValidationSession = validate(obj,vScriptsList);
         
         % Method to push published HTML directories to github
         pushToGithub(obj, vScriptsList);

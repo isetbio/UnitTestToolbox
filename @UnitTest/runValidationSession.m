@@ -77,23 +77,7 @@ function validateFast(vScriptsList)
                 );
             
     % ... and Go ! 
-    [abortValidationSession, vScriptsListWithNewFastValidationDataSet] = UnitTestOBJ.validate(vScriptsList);
-    
-    % Pass 2: Update FULL validation data sets for scripts with new FAST validation data sets
-    if (~isempty(vScriptsListWithNewFastValidationDataSet))
-        % Instantiate another @UnitTest object
-        UnitTestOBJ2 = UnitTest();   
-    
-        % Set options for FULL validation
-        UnitTestOBJ2.setValidationOptions(...
-                'type',                     'FULL', ...
-                'onRunTimeError',           getpref(theProjectName, 'onRunTimeErrorBehavior') ...
-                );
-            
-        % ... and Go ! 
-        fprintf('\nPASS 2: generating FULL Validation data sets for scripts with updated FAST validation data sets.\n');
-        [abortValidationSession, ~] = UnitTestOBJ2.validate(vScriptsListWithNewFastValidationDataSet);
-    end
+    abortValidationSession = UnitTestOBJ.validate(vScriptsList);
         
 end
 
@@ -115,23 +99,8 @@ function validateFull(vScriptsList)
                 );
     
     % ... and Go ! 
-    [abortValidationSession, vScriptsListWithNewFullValidationDataSet] = UnitTestOBJ.validate(vScriptsList);
+    abortValidationSession = UnitTestOBJ.validate(vScriptsList);
     
-    % Pass 2: Update FAST validation data sets for scripts with new FULL validation data sets
-    if (~isempty(vScriptsListWithNewFullValidationDataSet))
-        % Instantiate another @UnitTest object
-        UnitTestOBJ2 = UnitTest();   
-    
-        % Set options for FAST validation
-        UnitTestOBJ2.setValidationOptions(...
-                'type',                     'FAST', ...
-                'onRunTimeError',           getpref(theProjectName, 'onRunTimeErrorBehavior') ...
-                );
-            
-        % ... and Go ! 
-        fprintf('\nPASS 2: generating FAST Validation data sets for %d scripts with updated FULL validation data sets.\n', numel(vScriptsListWithNewFullValidationDataSet));
-        [abortValidationSession, ~] = UnitTestOBJ2.validate(vScriptsListWithNewFullValidationDataSet);
-    end
 end
 
 
@@ -156,23 +125,7 @@ function validatePublish(vScriptsList)
                 );
             
     % ... and Go ! 
-    [abortValidationSession, vScriptsListWithNewFullValidationDataSet] = UnitTestOBJ.validate(vScriptsList);     
-    
-    % Pass 2: Update FAST validation data sets for scripts with new FULL validation data sets
-    if (~isempty(vScriptsListWithNewFullValidationDataSet))
-        % Instantiate another @UnitTest object
-        UnitTestOBJ2 = UnitTest();   
-    
-        % Set options for FAST validation
-        UnitTestOBJ2.setValidationOptions(...
-                'type',                     'FAST', ...
-                'onRunTimeError',           getpref(theProjectName, 'onRunTimeErrorBehavior') ...
-                );
-            
-        % ... and Go ! 
-        fprintf('\nPASS 2: generating FAST Validation data sets for %d scripts which have updated FULL validation data sets.\n', numel(vScriptsListWithNewFullValidationDataSet));
-        [abortValidationSession, ~] = UnitTestOBJ2.validate(vScriptsListWithNewFullValidationDataSet);
-    end
+    abortValidationSession = UnitTestOBJ.validate(vScriptsList);     
     
     
     if (abortValidationSession == false)

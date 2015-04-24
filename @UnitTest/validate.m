@@ -1,5 +1,5 @@
 % Main validation engine
-function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = validate(obj, vScriptsToRunList)
+function abortValidationSession = validate(obj, vScriptsToRunList)
     
     % get validation params
     validationParams = obj.validationParams;
@@ -91,9 +91,12 @@ function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = valid
         validationReport        = '';
         validationFailedFlag    = true;
         validationFundamentalFailureFlag = true;
+        doFullValidationWhileInFastValidationMode = false;
         exceptionRaisedFlag     = true;
         validationData          = [];
         extraData               = [];
+        
+        
         
         if strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')
             % Run script the regular way
@@ -101,14 +104,16 @@ function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = valid
             
         elseif strcmp(validationParams.type, 'FAST')
             % Create fast validationData sub directory if it does not exist;
-            directoryExistedAlready = obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+            fastValidationDirectoryExistedAlready = obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
             
-            if (~directoryExistedAlready) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
+            if ((~fastValidationDirectoryExistedAlready) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')))
                 % The FAST validation data set directory did not exist already, or the FAST validation data set itseld did not exist,
-                % add this script to the list of scripts that will need a second pass, and also
-                % remove the FULL validation data file for this script
-                vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
-                % generate the full validation data directory, in case it does not exist
+                % Remove the FAST and the FULL validation data file for this script
+                system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
+                system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
+                % And force a full validation, which will generate new data
+                doFullValidationWhileInFastValidationMode = true;
+                % Generate the full validation data directory, in case it does not exist
                 obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
             end
             
@@ -118,33 +123,31 @@ function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = valid
         elseif strcmp(validationParams.type, 'FULL')
             
             % Create full validationData sub directory if it does not exist;
-            directoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            fullValidationDirectoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
             
-            if (~directoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+            if ((~fullValidationDirectoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')))
                 % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
-                % Add this script to the list of scripts that will need a second pass, and also
-                % remove the FAST validation data file for this script
-                % vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
+                % Remove the FAST and the FULL validation data file for this script
                 system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
-                % generate the fast validation data directory, in case it does not exist
+                system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
+                % Generate the fast validation data directory, in case it does not exist
                 obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
             end
-            
+
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'PUBLISH')
             
             % Create full validationData sub directory if it does not exist;
-            directoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+            fullValidationDirectoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
             
-            if (~directoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
-                % The FULL validation data set directory did not exist already, or the FULL validation data set itseld did not exist,
-                % add this script to the list of scripts that will need a second pass, and also
-                % remove the FAST validation data file for this script
-                vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
+            if ((~fullValidationDirectoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')))
+                % The FULL validation data set directory did not exist already, or the FULL validation data set itseld did not exist.
+                % remove the FAST and the FULL validation data file for this script
                 system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
-                % generate the fast validation data directory, in case it does not exist
+                system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
+                % Generate the fast validation data directory, in case it does not exist
                 obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
             end
             
@@ -244,6 +247,13 @@ function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = valid
             if ( (strcmp(validationParams.type, 'FAST'))  && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
                 abortValidationSession = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
+                if (abortValidationSession == false) && (doFullValidationWhileInFastValidationMode)
+                    if (validationParams.verbosity > 1) 
+                        fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
+                    end
+                    % 'FULL' mode validation
+                    abortValidationSession = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
+                end
             end
         
             if ( (strcmp(validationParams.type, 'FULL')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
@@ -256,7 +266,6 @@ function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = valid
                     % 'FULL' mode validation
                     abortValidationSession = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
                 end
-                
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
