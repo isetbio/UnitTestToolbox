@@ -121,10 +121,10 @@ function [abortValidationSession,  vScriptsListWithNewValidationDataSet] = valid
             directoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
             
             if (~directoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
-                % The FULL validation data set directory did not exist already, or the FULL validation data set itseld did not exist,
-                % add this script to the list of scripts that will need a second pass, and also
+                % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
+                % Add this script to the list of scripts that will need a second pass, and also
                 % remove the FAST validation data file for this script
-                vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
+                % vScriptsListWithNewValidationDataSet{numel(vScriptsListWithNewValidationDataSet)+1} = obj.vScriptsList{scriptIndex};
                 system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
                 % generate the fast validation data directory, in case it does not exist
                 obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
