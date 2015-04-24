@@ -30,7 +30,7 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
 
         subplot(1,3,3);
         imagesc(diff);
-        set(gca, 'CLim', maxDiff*[-1 1]);
+        set(gca, 'CLim', [-maxDiff maxDiff]);
         colorbar
         title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
         colormap(gray(256));
@@ -56,7 +56,7 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
         
         subplot(1,3,3);
         plot(field1 - field2, 'bs-',  'MarkerFaceColor', [0.8 0.8 1]);
-        set(gca, 'YLim', maxDiff*[-1.1 1.1]);
+        set(gca, 'YLim', double(maxDiff)*[-1.1 1.1]);
         title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
 
         
@@ -130,7 +130,8 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            if (~showTicks)
               set(gca, 'XTick', [], 'YTick', []);
            end
-           set(gca, 'CLim', maxDiff*[-1 1]);
+
+           set(gca, 'CLim', [-maxDiff maxDiff]);
            title(sprintf('i=%d', k));
            %colorbar('horiz');
            
@@ -179,7 +180,7 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            if (~showTicks)
               set(gca, 'XTick', [], 'YTick', []);
            end
-           set(gca, 'CLim', maxDiff*[-1 1]);
+           set(gca, 'CLim', [-maxDiff maxDiff]);
            title(sprintf('i=%d', k));
            
         end
