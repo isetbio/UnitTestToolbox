@@ -109,13 +109,15 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                 
                 if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
                     
-                    if (validationParams.verbosity > 3)
+                    if (validationParams.verbosity > 4)
                         if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'Hit enter to proceed.');
                             pause
                         end
                         if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'Hit enter to proceed.');
                             pause
                         end
                     end
@@ -143,13 +145,15 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                 
                 if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
                     
-                    if (validationParams.verbosity > 3)
+                    if (validationParams.verbosity > 4)
                         if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'Hit enter to proceed.');
                             pause
                         end
                         if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            fprintf(2,'Hit enter to proceed.');
                             pause
                         end
                     end
