@@ -97,7 +97,6 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
         extraData               = [];
         
         
-        
         if strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
@@ -106,9 +105,21 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             % Create fast validationData sub directory if it does not exist;
             fastValidationDirectoryExistedAlready = obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
             
-            
             if ((~fastValidationDirectoryExistedAlready) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')))
+                
                 if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
+                    
+                    if (validationParams.verbosity > 3)
+                        if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
+                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            pause
+                        end
+                        if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            pause
+                        end
+                    end
+                    
                     % The FAST validation data set directory did not exist already, or the FAST validation data set itseld did not exist,
                     % Remove the FAST and the FULL validation data file for this script
                     system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
@@ -129,7 +140,20 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             fullValidationDirectoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
             
             if ((~fullValidationDirectoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')))
+                
                 if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
+                    
+                    if (validationParams.verbosity > 3)
+                        if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
+                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            pause
+                        end
+                        if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+                            fprintf('\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s. Hit enter to proceed.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                            pause
+                        end
+                    end
+                    
                     % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
                     % Remove the FAST and the FULL validation data file for this script
                     system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));

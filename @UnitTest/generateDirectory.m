@@ -8,9 +8,14 @@ function directoryExistedAlready = generateDirectory(obj, path, subDir)
     projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences');
     
     if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
-    if (~exist(fullDir, 'dir'))
-        directoryExistedAlready = false;
-        mkdir(fullDir);
-    end
+        if (~exist(fullDir, 'dir'))
+            if (validationParams.verbosity > 4)
+                fprintf('\nDirectory\n\t%s\n does not exist. Will create it. Hit enter to continue');
+                pause;
+            end
+            
+            directoryExistedAlready = false;
+            mkdir(fullDir);
+        end
     end
 end
