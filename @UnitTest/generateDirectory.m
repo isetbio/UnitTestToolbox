@@ -10,7 +10,7 @@ function directoryExistedAlready = generateDirectory(obj, path, subDir)
     if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
         if (~exist(fullDir, 'dir'))
             if (validationParams.verbosity > 4)
-                fprintf('\nDirectory\n\t%s\n does not exist. Will create it. Hit enter to continue');
+                fprintf(2,'\nDirectory\n\t%s\n does not exist. Will create it. Hit enter to continue');
                 pause;
             end
             
