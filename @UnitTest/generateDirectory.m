@@ -7,6 +7,8 @@ function directoryExistedAlready = generateDirectory(obj, path, subDir)
     theProjectName = getpref('UnitTest', 'projectName');
     projectSpecificPreferences = getpref(theProjectName, 'projectSpecificPreferences');
     
+    validationParams = obj.validationParams;
+    
     if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
         if (~exist(fullDir, 'dir'))
             if (validationParams.verbosity > 4)
