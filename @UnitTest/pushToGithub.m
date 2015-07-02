@@ -23,12 +23,10 @@ function pushToGithub(obj, vScriptsList)
     
     % URL of github repo
     githubRepoURL = UnitTest.getPref('githubRepoURL');
+    validationDocsURL = sprintf('%s/validationdocs', githubRepoURL);
     
     % Directory where all published HTML directories will be moved to
     validationDocsDir  = sprintf('%s/validationdocs', gh_pages_CloneDir);
-    
-    % URL where validation docs will live
-    validationDocsURL = sprintf('%s/validationdocs', githubRepoURL);
     
     % Name of the markup file containing the catalog of validation runs and
     % pointers to the corresponding html files.
@@ -58,7 +56,8 @@ function pushToGithub(obj, vScriptsList)
     
     catalogFileName = fullfile(wikiCloneDir, validationResultsCatalogFile);
     
-    if (numel(vScriptsList) > 1)
+    
+    if (numel(vScriptsList) > 1) || ((numel(vScriptsList) == 1) && ( exist(vScriptsList{1}{1}, 'dir') ))
         % Now we start modifying things
         % Remove previous validationResultsCatalogFile
         system(['rm -rf ' catalogFileName]);
@@ -88,7 +87,7 @@ function pushToGithub(obj, vScriptsList)
         isSingleFileWithNewSection = false;
         % write sectionName
         sectionName = sectionNames{sectionIndex};
-        if (numel(vScriptsList) > 1)
+        if (numel(vScriptsList) > 1) || ((numel(vScriptsList) == 1) && ( exist(vScriptsList{1}{1}, 'dir') ))
             fprintf(validationResultsCatalogFID,'\n####  %s \n', sectionName);
         else
            % search the file for the pattern
