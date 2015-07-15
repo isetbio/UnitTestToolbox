@@ -99,8 +99,16 @@ function ConfigureUnitTestValidationForNewProject
     UnitTestPreferencesFileName = GenerateUnitTestPreferencesFile(projectName, validationRootDir, validationListAllValidationDirsScriptName, clonedWikiLocation, clonedGhPagesLocation, githubRepoURL);
     run(sprintf('%s', UnitTestPreferencesFileName));
     
-    % Generate the validateFastAll file
-    GenerateValidateFastAllFile(projectName, AutoConfigResourceDir, validationRootDir);
+    % Generate the various validate_xxx scripts
+    validationScripts = {...
+        'validateFastAll.m' ...
+        'validateFullAll.m' ...
+        'validateFullOne.m' ...
+        'validateFullAndPublishAll.m' ...
+        };
+    for k = 1:numel(validationScripts)
+        GenerateValidationScript(char(validationScripts{k}), projectName, AutoConfigResourceDir, validationRootDir);
+    end
     % ------------------------ TUTORIALS -------------------------
     
     
@@ -130,15 +138,15 @@ function ConfigureUnitTestValidationForNewProject
 end
 
 
-function GenerateValidateFastAllFile(projectName, autoConfigResourceDir, validationRootDir)
+function GenerateValidationScript(validationScript, projectName, autoConfigResourceDir, validationRootDir)
 
-    fid  = fopen(fullfile(autoConfigResourceDir, 'validateFastAll.m'),'r');
+    fid  = fopen(fullfile(autoConfigResourceDir, validationScript),'r');
     fileContents = fread(fid,'*char')';
     fclose(fid);
 
     fileContents = strrep(fileContents,'xxyyzzprojectname', projectName);
     
-    fid  = fopen(fullfile(validationRootDir,'validateFastAll.m'),'w');
+    fid  = fopen(fullfile(validationRootDir, validationScript),'w');
     fprintf(fid,'%s',fileContents);
     fclose(fid);
 

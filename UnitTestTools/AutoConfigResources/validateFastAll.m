@@ -29,7 +29,7 @@ function validateFastAll
     %% Whether to plot data that do not agree with the ground truth
     UnitTest.setPref('graphMismatchedData', false);
 
-    %% Print current values of isetbioValidation prefs
+    %% Print current values of validation prefs
     UnitTest.listPrefs();
     
     %% What to validate

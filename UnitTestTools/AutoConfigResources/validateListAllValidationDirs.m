@@ -8,7 +8,7 @@ function vScriptsList = validateListAllValidationDirs
 
 % List of script directories to validate. Each entry contains a cell array with 
 % with a validation script directory and an optional struct with
-% prefs that override the corresponding isetbioValidation prefs.
+% prefs that override the corresponding validation prefs.
 % At the moment only the 'generatePlots' pref can be overriden.
 %        
 
