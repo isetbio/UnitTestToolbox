@@ -6,14 +6,14 @@ function ConfigureUnitTestValidationForNewProject
     % Get the auto config resource dir
     AutoConfigResourceDir = GetAutoConfigResourceDir();
     
-    projectName = input('\n<strong> STEP 1/6  </strong> Enter UnitTest project name (e.g., BLIllumCalcs) : ', 's');
+    projectName = input('\n<strong> STEP 1/5  </strong> Enter UnitTest project name (e.g., BLIllumCalcs) : ', 's');
     if (isempty(projectName))
         fprintf(2,'Invalid project name\n');
         return;
     end
     
     % Get the directory where the wiki repository is cloned
-    d = input('\n<strong> STEP 2/6  </strong> Have you cloned the github wiki repository on your local computer ? [y/n] : ', 's');
+    d = input('\n<strong> STEP 2/5  </strong> Have you cloned the github wiki repository on your local computer ? [y/n] : ', 's');
     if (strcmp(d, 'y'))
         fprintf('\t    Select the directory where the github <strong>wiki</strong>  repository is cloned.\n');
         clonedWikiLocation = uigetdir('/Users/Shared/Matlab', sprintf('Select the directory where the github wikirepository is cloned.'));
@@ -27,7 +27,7 @@ function ConfigureUnitTestValidationForNewProject
     end
     
     % Get the directory where the gh-pages repository is cloned
-    d = input('\n<strong> STEP 3/6  </strong> Have you cloned the github gh-pages repository on your local computer ? [y/n] : ', 's');
+    d = input('\n<strong> STEP 3/5  </strong> Have you cloned the github gh-pages repository on your local computer ? [y/n] : ', 's');
     if (strcmp(d, 'y'))
         fprintf('\t    Select the directory where the github <strong>gh-pages</strong>  repository is cloned.\n');
         clonedGhPagesLocation = uigetdir('/Users/Shared/Matlab', sprintf('Select the directory where the github gh-pagesrepository is cloned.'));
@@ -42,7 +42,7 @@ function ConfigureUnitTestValidationForNewProject
     
 
     % Create or select the validation root dir
-    fprintf('\n<strong> STEP 4/6  </strong> Select the location where to create the <strong>validation</strong> and <strong>tutorials</strong> root directories \n');
+    fprintf('\n<strong> STEP 4/5  </strong> Select the location where to create the <strong>validation</strong> and <strong>tutorials</strong> root directories \n');
     subfolderDir = uigetdir('/Users/Shared/Matlab', sprintf('Select where to create the validation and tutorials root directories for project ''%s'' .', projectName));
     if isempty(subfolderDir)
         fprintf(2,'Invalid validation root directory\n');
@@ -55,7 +55,7 @@ function ConfigureUnitTestValidationForNewProject
    
     
     % Finally get the URLs
-    fprintf('\n<strong> STEP 5/6  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs''\n'); % https://github.com/isetbio/BLIlluminationDiscriminationCalcs.git''\n');
+    fprintf('\n<strong> STEP 5/5  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs''\n'); % https://github.com/isetbio/BLIlluminationDiscriminationCalcs.git''\n');
     githubRepoURL    = input('            URL : ', 's');
     %fprintf('\n<strong> STEP 6/6  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs/tutorialdocs''\n');
     tutorialsDocsURL = sprintf('%s/tutorialdocs', githubRepoURL); 
