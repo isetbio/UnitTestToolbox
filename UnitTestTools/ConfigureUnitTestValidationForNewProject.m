@@ -55,10 +55,10 @@ function ConfigureUnitTestValidationForNewProject
    
     
     % Finally get the URLs
-    fprintf('\n<strong> STEP 5/6  </strong> URL of the github repository, e.g., ''https://github.com/isetbio/BLIlluminationDiscriminationCalcs.git''\n');
+    fprintf('\n<strong> STEP 5/6  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs''\n'); % https://github.com/isetbio/BLIlluminationDiscriminationCalcs.git''\n');
     githubRepoURL    = input('            URL : ', 's');
-    fprintf('\n<strong> STEP 6/6  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs/tutorialdocs''\n');
-    tutorialsDocsURL = input('            URL : ', 's');
+    %fprintf('\n<strong> STEP 6/6  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs/tutorialdocs''\n');
+    tutorialsDocsURL = sprintf('%s/tutorialdocs', githubRepoURL); 
     fprintf('\n\n');
     
     % ---------------------- VALIDATION  ------------------------------
@@ -105,6 +105,7 @@ function ConfigureUnitTestValidationForNewProject
         'validateFullAll.m' ...
         'validateFullOne.m' ...
         'validateFullAndPublishAll.m' ...
+        'validateFullAndPublishOne.m'
         };
     for k = 1:numel(validationScripts)
         GenerateValidationScript(char(validationScripts{k}), projectName, AutoConfigResourceDir, validationRootDir);
@@ -172,7 +173,6 @@ function GeneratePublishAllTutorialFile(projectName, validationRootDir, tutorial
         ' ' ...
         };
 
-    tutorialsAvailableAt = strrep(getpref(projectName,'githubRepoURL'), '.git', '/wiki/Tutorials');
     
     sections{2} = { ...
         sprintf('    %% list of scripts to be skipped from automatic publishing') ...
@@ -182,7 +182,6 @@ function GeneratePublishAllTutorialFile(projectName, validationRootDir, tutorial
         sprintf('    %% ----------------------- end of script customization -----------------')...
         ' ' ...
         sprintf('    UnitTest.publishProjectTutorials(p, scriptsToSkip, ''All'');') ...
-        sprintf('    fprintf(2,''Tutorials available at:  %s\\n'');', tutorialsAvailableAt) ...
         sprintf('end')...
         };
 
