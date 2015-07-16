@@ -91,7 +91,7 @@ function ConfigureUnitTestValidationForNewProject
     
     % Generate validationListAllValidationDirs
     cd(validationRootDir);
-    validationListAllValidationDirsScriptName = sprintf('validateListAllValidationDirsForProject%s', projectName);
+    validationListAllValidationDirsScriptName = sprintf('validateListAllValidationDirs%s', projectName);
     system(sprintf('cp %s/validateListAllValidationDirs.m ./%s.m', AutoConfigResourceDir, validationListAllValidationDirsScriptName));
     
     
