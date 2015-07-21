@@ -15,8 +15,6 @@ function [structsAreSimilarWithinSpecifiedTolerance, result] = structsAreSimilar
     else
        structsAreSimilarWithinSpecifiedTolerance = false;
     end
-    
-    
 end
 
 function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Name, struct2, tolerance, graphMismatchedData, compareStringFields, oldResult)
@@ -150,7 +148,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                         result{resultIndex} = sprintf('''%s'' is a [%s] matrix whereas ''%s'' is a [%s] matrix.', field1Name, sizeField1String, field2Name, sizeField2String);
                    else
                         % equal size numerics
-                        result = CompareCellArrays(field1, field2, compareStringFields, result);
+                        result = CompareCellArrays(obj, field1Name, field1, field2Name, field2, tolerance, graphMismatchedData, compareStringFields, result);
                    end
                end
            else
@@ -167,7 +165,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
 end
 
 
-function result = CompareCellArrays(field1, field2, compareStringFields, result)
+function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2, tolerance, graphMismatchedData, compareStringFields, result)
 
    for k = 1:numel(field1) 
        
@@ -184,6 +182,7 @@ function result = CompareCellArrays(field1, field2, compareStringFields, result)
               resultIndex = numel(result)+1;
               result{resultIndex} = sprintf('Corresponding cell fields have different types');
            end
+           
        % numeric values
        elseif (isnumeric(field1{k}))
            if (isnumeric(field2{k}))
@@ -195,16 +194,29 @@ function result = CompareCellArrays(field1, field2, compareStringFields, result)
               resultIndex = numel(result)+1;
               result{resultIndex} = sprintf('Corresponding cell fields have different types');
            end
+           
+       % cells
        elseif (iscell(field1{k}))
            if (iscell(field2{k}))
-               resultIndex = numel(result)+1;
-               result{resultIndex} = CompareCellArrays(field1, field2, compareStringFields, result);
+               result = CompareCellArrays(obj, field1Name, field1{k}, field2Name, field2{k}, tolerance, graphMismatchedData, compareStringFields, result);
            else
               resultIndex = numel(result)+1;
               result{resultIndex} = sprintf('Corresponding cell fields have different types');
            end
+           
+       % structs
+       elseif isstruct(field1{k})
+           if isstruct(field2{k})
+                result = recursivelyCompareStructs(obj, field1Name, field1{k}, field2Name, field2{k}, tolerance, graphMismatchedData, compareStringFields, result);
+           else
+                resultIndex = numel(result)+1;
+                result{resultIndex} = sprintf('''%s'' is a struct but ''%s'' is not.', field1Name, field2Name);
+           end
+           
        else
-          fprintf(2,'UnitTest.structsAreSimilar.CompareCellArrays. non-char, non-numeric comparison not implemented\n');
+          class(field1{k})
+          class(field2{k})
+          error(2,'UnitTest.structsAreSimilar.CompareCellArrays. non-char, non-numeric comparison not implemented\n');
        end
    end
     
