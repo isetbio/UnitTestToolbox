@@ -186,7 +186,7 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
        % numeric values
        elseif (isnumeric(field1{k}))
            if (isnumeric(field2{k}))
-               if (any(field1 ~= field2))
+               if (any(field1{k} ~= field2{k}))
                    resultIndex = numel(result)+1;
                    result{resultIndex} = sprintf('Corresponding cell fields have different numeric values: ''%g'' vs. ''%g''.', field1{k}, field2{k});
                end
