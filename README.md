@@ -3,4 +3,4 @@ A toolbox for validating the data and execution of scripts for any project.
 
 See the UnitTestToolbox wiki for more information.
 
-Developer: Nicolas P. Cottaris, University of Pennsylvania
+Developers: Nicolas P. Cottaris and David H. Brainard, University of Pennsylvania
