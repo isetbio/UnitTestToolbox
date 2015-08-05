@@ -1,6 +1,11 @@
  % Method that prints all available validation scripts and asks the user to select one for validation.
-function scriptToValidate = SelectScriptFromExistingOnes()
-    vScriptsList = validateListAllValidationDirs;
+function scriptToValidate = selectScriptFromExistingOnes()
+
+    listingScript = UnitTest.getPref('listingScript');
+    validationRootDir = UnitTest.getPref('validationRootDir');
+
+    vScriptsList = eval(listingScript);
+
     totalScriptIndex = 0;
     scriptToValidate = '';
     
@@ -26,7 +31,7 @@ function scriptToValidate = SelectScriptFromExistingOnes()
                 fprintf('---------------------------------------------------------------------------\n');
             end
             if (scriptIndex == 1)
-                fprintf('<strong>%s</strong>\n', strrep(scriptDirectoryName, fullfile(isetbioRootPath, 'validation', 'scripts/'), ''));
+                fprintf('<strong>%s</strong>\n', strrep(scriptDirectoryName, fullfile(validationRootDir,  'scripts/'), ''));
             end
             scriptName{totalScriptIndex} = fullfile(scriptDirectoryName,scriptsListInCurrentDirectory(scriptIndex).name);
             dots = '';
@@ -35,7 +40,6 @@ function scriptToValidate = SelectScriptFromExistingOnes()
             end
             fprintf('\t%s %s %3d\n',  scriptsListInCurrentDirectory(scriptIndex).name, dots,totalScriptIndex);
         end
-        
     end
     selectedScriptIndex = input(sprintf('\nEnter script no. to validate/publish [%d-%d]: ', 1, totalScriptIndex));
     if (isempty(selectedScriptIndex)) || (~isnumeric(selectedScriptIndex))
