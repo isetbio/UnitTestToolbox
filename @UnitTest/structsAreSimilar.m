@@ -134,6 +134,40 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                result{resultIndex} = sprintf('''%s'' is a numeric but ''%s'' is not.', field1Name, field2Name);
            end
            
+       % compare  logicals
+       elseif islogical(field1)
+           if islogical(field2)
+               if (ndims(field1) ~= ndims(field2))
+                   resultIndex = numel(result)+1;
+                   result{resultIndex} = sprintf('''%s'' is a %d-D logical whereas ''%s'' is a %d-D logical.', field1Name, ndims(field1), field2Name, ndims(field2));
+               else 
+                   if (any(size(field1)-size(field2)))
+                        sizeField1String = sprintf((repmat('%2.0f  ', 1, numel(size(field1)))), size(field1));
+                        sizeField2String = sprintf((repmat('%2.0f  ', 1, numel(size(field2)))), size(field2));
+                        resultIndex = numel(result)+1;
+                        result{resultIndex} = sprintf('''%s'' is a [%s] matrix whereas ''%s'' is a [%s] matrix.', field1Name, sizeField1String, field2Name, sizeField2String);
+                   else
+                       % equal size logicals
+                       if (any(abs(field1(:)-field2(:)) > tolerance))
+                            figureName = '';
+                            if (graphMismatchedData)
+                                figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name, field2Name);
+                            end
+                            resultIndex = numel(result)+1;
+                            maxDiff = max(abs(field1(:)-field2(:)));
+                            if (isempty(figureName))
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' (%g) is greater than the set tolerance (%g).', field1Name, field2Name, maxDiff, tolerance);
+                            else
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' (%g) is greater than the set tolerance (%g). See figure named: ''%s''', field1Name, field2Name, maxDiff, tolerance, figureName);
+                            end
+                       end
+                   end
+               end
+           else
+               resultIndex = numel(result)+1;
+               result{resultIndex} = sprintf('''%s'' is a logical but ''%s'' is not.', field1Name, field2Name);
+           end
+           
        % compare cells
        elseif iscell(field1)
            if iscell(field2)
@@ -147,7 +181,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                         resultIndex = numel(result)+1;
                         result{resultIndex} = sprintf('''%s'' is a [%s] matrix whereas ''%s'' is a [%s] matrix.', field1Name, sizeField1String, field2Name, sizeField2String);
                    else
-                        % equal size numerics
+                        % equal size cells
                         result = CompareCellArrays(obj, field1Name, field1, field2Name, field2, tolerance, graphMismatchedData, compareStringFields, result);
                    end
                end
