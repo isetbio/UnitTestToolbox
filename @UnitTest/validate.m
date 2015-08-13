@@ -402,8 +402,6 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             summaryReportEntry.textIsBold{5} = false;
         end
         
-        
-        
         obj.summaryReport{numel(obj.summaryReport)+1} = summaryReportEntry;
     end % scriptIndex
     
