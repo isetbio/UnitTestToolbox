@@ -31,6 +31,9 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
     % reset currentValidationSessionResults
     obj.validationSessionRunTimeExceptions = [];
     
+    % reset the summary report
+    obj.summaryReport = {};
+    
     % reset list of scripts with new validation data sets
     vScriptsListWithNewValidationDataSet = {};
     
@@ -259,59 +262,91 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             end
         end
 
+        % Update summary report 
+        summaryReportEntry = struct();
+        summaryReportEntry.text{1} = sprintf('\n[%3d] %s: ',scriptIndex, urlToScript);
+        
+        spaces = 60 - numel(smallScriptName);
+        for ispaceIndex = 1:spaces
+            summaryReportEntry.text{1} = sprintf('%s.', summaryReportEntry.text{1});
+        end
+        summaryReportEntry.textIsBold{1} = false;
+        
         if (validationParams.verbosity > 0) 
             % Update the command line output
             if (validationFailedFlag)
                 if (validationFundamentalFailureFlag)
                     fprintf(2, '\tInternal validation  : FUNDAMENTAL FAILURE !!\n');
+                    
+                    % Update summary report
+                    summaryReportEntry.text{2} = sprintf('Internal validation: FUNDAMENTAL FAILURE ');
+                    summaryReportEntry.textIsBold{2} = true;
+        
                 else
                     fprintf(2, '\tInternal validation  : FAILED\n');
+                    
+                    % Update summary report
+                    summaryReportEntry.text{2} = sprintf('Internal validation: FAILED ');
+                    summaryReportEntry.textIsBold{2} = true;
                 end
             else
-               fprintf('\tInternal validation  : PASSED\n'); 
+               fprintf('\tInternal validation  : PASSED\n '); 
+               
+               % Update summary report
+               summaryReportEntry.text{2} = sprintf('Internal validation: PASSED ');
+               summaryReportEntry.textIsBold{2} = false;
             end
             
             if (exceptionRaisedFlag)
                fprintf(2, '\tRun-time status      : exception raised\n');
+               % Update summary report
+               summaryReportEntry.text{3} = sprintf('Runtime status:    EXCEPTION RAISED ');
+               summaryReportEntry.textIsBold{3} = true;
             else
                fprintf('\tRun-time status      : no exception raised\n'); 
+               % Update summary report
+               summaryReportEntry.text{3} = sprintf('Runtime status: NO EXCEPTION RAISED ');
+               summaryReportEntry.textIsBold{3} = false;
             end
         end
         
+        resultStingFastValidation = '';
+        resultStingFullValidation = '';
+          
         if (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')) 
             if ( (strcmp(validationParams.type, 'FAST'))  && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                abortValidationSession = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
+                [abortValidationSession, resultStingFastValidation] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
                 if (abortValidationSession == false) && (doFullValidationWhileInFastValidationMode)
                     if (validationParams.verbosity > 1) 
                         fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                     end
                     % 'FULL' mode validation
-                    abortValidationSession = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
+                    [abortValidationSession, resultStingFullValidation] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
                 end
             end
         
             if ( (strcmp(validationParams.type, 'FULL')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                abortValidationSession = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
+                [abortValidationSession, resultStingFastValidation] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
                 if (abortValidationSession == false)
                     if (validationParams.verbosity > 1) 
                         fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                     end
                     % 'FULL' mode validation
-                    abortValidationSession = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
+                    [abortValidationSession, resultStingFullValidation] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
                 end
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
-                abortValidationSession = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
+                [abortValidationSession, resultStingFastValidation] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
                 if (abortValidationSession == false)
                     if (validationParams.verbosity > 1) 
                         fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                     end
                     % 'FULL' mode validation
-                    abortValidationSession = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName); 
+                    [abortValidationSession, resultStingFullValidation] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName); 
 
                     % Construct sectionData for github wiki
                     sectionName = scriptSubDirectory;
@@ -341,7 +376,50 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
         drawnow;
         pause(0.01);
         
+        if (strcmp(resultStingFastValidation, 'PASSED'))
+            % Update summary report
+            summaryReportEntry.text{4} = sprintf('Fast validation: PASSED ');
+            summaryReportEntry.textIsBold{4} = false;
+        elseif (strcmp(resultStingFastValidation, 'FAILED'))
+            % Update summary report
+            summaryReportEntry.text{4} = sprintf('Fast validation: FAILED ');
+            summaryReportEntry.textIsBold{4} = true;
+        else
+            summaryReportEntry.text{4} = sprintf('Fast validation: NoTest ');
+            summaryReportEntry.textIsBold{4} = false;
+        end
+        
+        if (strcmp(resultStingFullValidation, 'PASSED'))
+            % Update summary report
+            summaryReportEntry.text{5} = sprintf('Full validation: PASSED ');
+            summaryReportEntry.textIsBold{5} = false;
+        elseif (strcmp(resultStingFullValidation, 'FAILED'))
+            % Update summary report
+            summaryReportEntry.text{5} = sprintf('Full validation: FAILED ');
+            summaryReportEntry.textIsBold{5} = true;
+        else
+            summaryReportEntry.text{5} = sprintf('Full validation: NoTest ');
+            summaryReportEntry.textIsBold{5} = false;
+        end
+        
+        
+        
+        obj.summaryReport{numel(obj.summaryReport)+1} = summaryReportEntry;
     end % scriptIndex
+    
+    fprintf('\n\n<strong> SUMMARY REPORT </strong>');
+    for k = 1:numel(obj.summaryReport)
+        summaryReportEntry = obj.summaryReport{k};
+        fprintf('%s ', summaryReportEntry.text{1});
+        for entryIndex = 2:numel(summaryReportEntry.text)
+            if (summaryReportEntry.textIsBold{entryIndex})
+                fprintf(2,'%s; ', summaryReportEntry.text{entryIndex});
+            else
+                fprintf('%s; ', summaryReportEntry.text{entryIndex});
+            end
+        end
+    end
+    fprintf('\n');
     
     % Close any remaining non-data mismatch figures
     if (~isempty(scriptRunParams)) && (isfield(scriptRunParams, 'closeFigsOnInit'))
@@ -360,7 +438,7 @@ end
 
 
 
-function cancelRun = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName)
+function [cancelRun, resultString] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName)
 
     cancelRun = false;
     
@@ -402,9 +480,11 @@ function cancelRun = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, 
                 fprintf('\tData hash key        : %s\n', hashSHA25);
             end
             groundTruthFastValidationFailed = false;
+            resultString = sprintf('PASSED');
         else
             if (validationParams.verbosity > 0) 
                 fprintf(2,'\tFast validation      : FAILED against ground truth data of %s.\n', groundTruthTime);
+                
                 if (validationParams.verbosity > 2) 
                     fprintf(2,'\t > Ground truth info : %30s / %s, MATLAB %s by ''%s''\n', hostInfo.computerAddress, hostInfo.computer, hostInfo.matlabVersion, hostInfo.userName);
                     fprintf(2,'\t > Local host info   : %30s / %s, MATLAB %s by ''%s''\n', obj.hostInfo.computerAddress, obj.hostInfo.computer, obj.hostInfo.matlabVersion, obj.hostInfo.userName);
@@ -413,6 +493,7 @@ function cancelRun = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, 
                 fprintf(2,'\tDataHash-groundTruth : %s\n', groundTruthValidationData);
             end
             groundTruthFastValidationFailed = true;
+            resultString = sprintf('FAILED');
         end
     else
         % Ground truth data set for this file does not exist.
@@ -431,9 +512,11 @@ function cancelRun = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, 
             if (validationParams.verbosity > 0)
                 fprintf('\tFast validation      : no ground truth dataset exists. Generating one. \n');
             end
+            resultString = sprintf('PASSED');
         else
             fprintf(2,'\tFast validation      : FAILED because a ''FAST'' ground truth data set for this script was not found.\n');
             groundTruthFastValidationFailed = true; 
+            resultString = sprintf('FAILED');
         end
     end
            
@@ -456,7 +539,7 @@ function cancelRun = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, 
 end
 
 
-function cancelRun = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName)
+function [cancelRun, resultString] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName)
 
     cancelRun = false;
     
@@ -497,6 +580,7 @@ function cancelRun = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, 
                     fprintf('\t > Local host info   : %30s / %s, MATLAB %s by ''%s''\n', obj.hostInfo.computerAddress, obj.hostInfo.computer, obj.hostInfo.matlabVersion, obj.hostInfo.userName);
                 end
             end
+            resultString = sprintf('PASSED');
             groundTruthFullValidationFailed = false;
         else
             if (validationParams.verbosity > 0) 
@@ -507,7 +591,8 @@ function cancelRun = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, 
                 end
             end
             groundTruthFullValidationFailed = true;
-
+            resultString = sprintf('FAILED');
+            
             % print info about mismatched fields
             if (validationParams.verbosity > 0) 
                 for k = 1:numel(mismatchReport)
@@ -539,6 +624,7 @@ function cancelRun = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, 
             if (validationParams.verbosity > 0)
                 fprintf('\tFull validation      : no ground truth dataset exists. Generating one. \n');
             end
+            resultString = sprintf('PASSED');
             
             if (validationParams.verbosity > 3) 
                 if (isempty(fieldnames(extraData)))
@@ -549,9 +635,8 @@ function cancelRun = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, 
             fprintf(2,'\tFull validation      : FAILED because a ''FULL'' ground truth data set for this script was not found.\n');
             fprintf(2,'\tFull validation      : You can request a ''FULL'' ground truth data set by emailing cottaris@sas.upenn.edu.\n');
             groundTruthFullValidationFailed = true; 
-        end
-
-        
+            resultString = sprintf('FAILED');
+        end 
     end
 
     if (~groundTruthFullValidationFailed) 

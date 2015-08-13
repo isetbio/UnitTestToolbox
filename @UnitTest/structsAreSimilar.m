@@ -134,6 +134,27 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                result{resultIndex} = sprintf('''%s'' is a numeric but ''%s'' is not.', field1Name, field2Name);
            end
            
+       % compare logicals
+       elseif islogical(field1)
+           if islogical(field2)
+               if (ndims(field1) ~= ndims(field2))
+                   resultIndex = numel(result)+1;
+                   result{resultIndex} = sprintf('''%s'' is a %d-D logical whereas ''%s'' is a %d-D logical.', field1Name, ndims(field1), field2Name, ndims(field2));
+               else 
+                   if (any(size(field1)-size(field2)))
+                       
+                   else
+                       % equal size logicals
+                       if (any(field1(:) ~= field2(:)))
+                           result{resultIndex} = sprintf('There are differences between logical fields''%s'' and ''%s''.', field1Name, field2Name);
+                       end
+                   end
+               end
+           else
+               resultIndex = numel(result)+1;
+               result{resultIndex} = sprintf('''%s'' is a logical but ''%s'' is not.', field1Name, field2Name);
+           end
+           
        % compare cells
        elseif iscell(field1)
            if iscell(field2)

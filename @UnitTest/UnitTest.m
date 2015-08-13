@@ -23,6 +23,9 @@ classdef UnitTest < handle
         
         % results of current validation session
         validationSessionRunTimeExceptions;
+        
+        % summary report
+        summaryReport;
     end
     
     % Private properties
