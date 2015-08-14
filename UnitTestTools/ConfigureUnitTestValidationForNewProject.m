@@ -6,14 +6,14 @@ function ConfigureUnitTestValidationForNewProject
     % Get the auto config resource dir
     AutoConfigResourceDir = GetAutoConfigResourceDir();
     
-    projectName = input('\n<strong> STEP 1/5  </strong> Enter UnitTest project name (e.g., BLIllumCalcs) : ', 's');
+    projectName = input('\n<strong> STEP 1/6  </strong> Enter UnitTest project name (e.g., BLIllumCalcs) : ', 's');
     if (isempty(projectName))
         fprintf(2,'Invalid project name\n');
         return;
     end
     
     % Get the directory where the wiki repository is cloned
-    d = input('\n<strong> STEP 2/5  </strong> Have you cloned the github wiki repository on your local computer ? [y/n] : ', 's');
+    d = input('\n<strong> STEP 2/6  </strong> Have you cloned the github wiki repository on your local computer ? [y/n] : ', 's');
     if (strcmp(d, 'y'))
         fprintf('\t    Select the directory where the github <strong>wiki</strong>  repository is cloned.\n');
         clonedWikiLocation = uigetdir('/Users/Shared/Matlab', sprintf('Select the directory where the github wikirepository is cloned.'));
@@ -27,7 +27,7 @@ function ConfigureUnitTestValidationForNewProject
     end
     
     % Get the directory where the gh-pages repository is cloned
-    d = input('\n<strong> STEP 3/5  </strong> Have you cloned the github gh-pages repository on your local computer ? [y/n] : ', 's');
+    d = input('\n<strong> STEP 3/6  </strong> Have you cloned the github gh-pages repository on your local computer ? [y/n] : ', 's');
     if (strcmp(d, 'y'))
         fprintf('\t    Select the directory where the github <strong>gh-pages</strong>  repository is cloned.\n');
         clonedGhPagesLocation = uigetdir('/Users/Shared/Matlab', sprintf('Select the directory where the github gh-pagesrepository is cloned.'));
@@ -42,7 +42,7 @@ function ConfigureUnitTestValidationForNewProject
     
 
     % Create or select the validation root dir
-    fprintf('\n<strong> STEP 4/5  </strong> Select the location where to create the <strong>validation</strong> and <strong>tutorials</strong> root directories \n');
+    fprintf('\n<strong> STEP 4/6  </strong> Select the location where to create the <strong>validation</strong> and <strong>tutorials</strong> root directories \n');
     subfolderDir = uigetdir('/Users/Shared/Matlab', sprintf('Select where to create the validation and tutorials root directories for project ''%s'' .', projectName));
     if isempty(subfolderDir)
         fprintf(2,'Invalid validation root directory\n');
@@ -52,13 +52,19 @@ function ConfigureUnitTestValidationForNewProject
         fprintf('            Validation and tutorials root directories will be created under  ''%s'' \n',validationRootSuperDir);
     end
     
-   
-    
-    % Finally get the URLs
-    fprintf('\n<strong> STEP 5/5  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs''\n'); % https://github.com/isetbio/BLIlluminationDiscriminationCalcs.git''\n');
+    % Get the URLs
+    fprintf('\n<strong> STEP 5/6  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs''\n'); % https://github.com/isetbio/BLIlluminationDiscriminationCalcs.git''\n');
     githubRepoURL    = input('            URL : ', 's');
     %fprintf('\n<strong> STEP 6/6  </strong> URL of the github repository, e.g., ''http://isetbio.github.io/BLIlluminationDiscriminationCalcs/tutorialdocs''\n');
     tutorialsDocsURL = sprintf('%s/tutorialdocs', githubRepoURL); 
+    
+    % Finally get the prefix
+    validationScriptsPrefix = input('\n<strong> STEP 6/6  </strong> Enter validation scripts prefix (e.g., ie) : ', 's');
+    if (isempty(validationScriptsPrefix))
+        fprintf(2,'Invalid validation scripts prefix\n');
+        return;
+    end
+       
     fprintf('\n\n');
     
     % ---------------------- VALIDATION  ------------------------------
@@ -101,14 +107,14 @@ function ConfigureUnitTestValidationForNewProject
     
     % Generate the various validate_xxx scripts
     validationScripts = {...
-        'validateFastAll' ...
-        'validateFullAll' ...
-        'validateFullOne' ...
-        'validateFullAndPublishAll' ...
-        'validateFullAndPublishOne'
+        'ValidateFastAll' ...
+        'ValidateFullAll' ...
+        'ValidateFullOne' ...
+        'ValidateFullAndPublishAll' ...
+        'ValidateFullAndPublishOne'
         };
     for k = 1:numel(validationScripts)
-        GenerateValidationScript(char(validationScripts{k}), projectName, AutoConfigResourceDir, validationRootDir);
+        GenerateValidationScript(char(validationScripts{k}), projectName, AutoConfigResourceDir, validationRootDir, validationScriptsPrefix);
     end
     % ------------------------ TUTORIALS -------------------------
     
@@ -133,29 +139,29 @@ function ConfigureUnitTestValidationForNewProject
     
     
     % Generate the publishAllTutorials and publishOneTutorial files
-    GeneratePublishAllTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL);
-    GeneratePublishOneTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL);
+    GeneratePublishAllTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL, validationScriptsPrefix);
+    GeneratePublishOneTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL, validationScriptsPrefix);
     cd(currentDir);
 end
 
 
-function GenerateValidationScript(validationScript, projectName, autoConfigResourceDir, validationRootDir)
+function GenerateValidationScript(validationScript, projectName, autoConfigResourceDir, validationRootDir, validationScriptsPrefix)
 
     fid  = fopen(fullfile(autoConfigResourceDir, sprintf('%s__Template.m',validationScript)),'r');
     fileContents = fread(fid,'*char')';
     fclose(fid);
 
     fileContents = strrep(fileContents,'xxyyzzprojectname', projectName);
-    
-    fid  = fopen(fullfile(validationRootDir, sprintf('%s.m',validationScript)),'w');
+    fileContents = strrep(fileContents,'prefix', validationScriptsPrefix);
+    fid  = fopen(fullfile(validationRootDir, sprintf('%s%s.m',validationScriptsPrefix,validationScript)),'w');
     fprintf(fid,'%s',fileContents);
     fclose(fid);
 
 end
 
-function GeneratePublishOneTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL)
+function GeneratePublishOneTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL,validationScriptsPrefix)
     sections{1} = { ...
-        sprintf('function publishOneTutorial') ...
+        sprintf('function %sPublishOneTutorial',validationScriptsPrefix) ...
         ' ' ...
         sprintf('    %% ------- script customization - adapt to your environment/project -----') ...
         ' ' ...
@@ -183,7 +189,7 @@ function GeneratePublishOneTutorialFile(projectName, validationRootDir, tutorial
         sprintf('end')...
         };
 
-    PublishAllTutorialsFileName = fullfile(validationRootDir,'publishOneTutorial.m');
+    PublishAllTutorialsFileName = fullfile(validationRootDir,sprintf('%sPublishOneTutorial.m', validationScriptsPrefix));
     
     fid = fopen(PublishAllTutorialsFileName, 'w');
     for l = 1:numel(sections)
@@ -195,9 +201,9 @@ function GeneratePublishOneTutorialFile(projectName, validationRootDir, tutorial
     
 end
 
-function GeneratePublishAllTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL)
+function GeneratePublishAllTutorialFile(projectName, validationRootDir, tutorialsDir, tutorialsDocsURL, validationScriptsPrefix)
     sections{1} = { ...
-        sprintf('function publishAllTutorials') ...
+        sprintf('function %sPublishAllTutorials', validationScriptsPrefix) ...
         ' ' ...
         sprintf('    %% ------- script customization - adapt to your environment/project -----') ...
         ' ' ...
@@ -226,7 +232,7 @@ function GeneratePublishAllTutorialFile(projectName, validationRootDir, tutorial
         sprintf('end')...
         };
 
-    PublishAllTutorialsFileName = fullfile(validationRootDir,'publishAllTutorials.m');
+    PublishAllTutorialsFileName = fullfile(validationRootDir,sprintf('%sPublishAllTutorials.m',validationScriptsPrefix));
     
     fid = fopen(PublishAllTutorialsFileName, 'w');
     for l = 1:numel(sections)

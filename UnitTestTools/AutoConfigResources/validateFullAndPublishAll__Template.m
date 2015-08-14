@@ -1,4 +1,4 @@
-function validateFullAndPublishAll
+function prefixValidateFullAndPublishAll
 %
 % Validation and publish our full list of validation programs
 
