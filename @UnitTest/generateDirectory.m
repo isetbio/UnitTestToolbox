@@ -17,7 +17,14 @@ function directoryExistedAlready = generateDirectory(obj, path, subDir)
             end
             
             directoryExistedAlready = false;
-            mkdir(fullDir);
+            try
+                mkdir(fullDir);
+            catch err
+                fprintf('\n --------------------------------------------------------------------------------------\n');
+                fprintf('\n Failed to generate directory ''%s''. Check path and privileges and retry.\n', fullDir);
+                fprintf('\n --------------------------------------------------------------------------------------\n\n')
+                rethrow(err);
+            end
         end
     end
 end
