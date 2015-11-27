@@ -457,14 +457,10 @@ function [cancelRun, resultString] = doFastValidation(obj, fastLocalGroundTruthH
     % Load and check value stored in LocalGroundTruthHistoryDataFile 
     dataFileName = fastLocalGroundTruthHistoryDataFile;
     forceGenerateGroundTruth = false;
-            
-    if (exist(dataFileName, 'file') == 2)
-        % Ground truth data set for this file exists. So use it.
-        [groundTruthValidationData, ~, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
-        if (validationParams.verbosity > 3)
-           fprintf('\tGround truth  file   : %s\n', dataFileName); 
-        end
-        
+
+    % Try to get ground truth data from file or remote data toolbox.
+    [groundTruthValidationData, ~, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
+    if (~isempty(groundTruthValidationData))        
         % Compare validation data
         if (strcmp(groundTruthValidationData, hashSHA25))
             if (validationParams.verbosity > 0) 
@@ -559,12 +555,8 @@ function [cancelRun, resultString] = doFullValidation(obj, fullLocalGroundTruthH
         validationData = rmfield(validationData, 'hashData');
     end
                 
-    if (exist(dataFileName, 'file') == 2)
-        % Ground truth data set for this file exists. So use it.
-        [groundTruthValidationData, groundTruthExtraData, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
-        if (validationParams.verbosity > 3)
-           fprintf('\tGround truth  file   : %s\n', dataFileName); 
-        end
+    [groundTruthValidationData, ~, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
+    if (~isempty(groundTruthValidationData))        
         
         % Compare validation data
         [structsAreSimilarWithinSpecifiedTolerance, mismatchReport] = ...
