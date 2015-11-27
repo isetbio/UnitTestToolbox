@@ -24,6 +24,12 @@ classdef UnitTest < handle
         % results of current validation session
         validationSessionRunTimeExceptions;
         
+        % whether or not to use Remote Data Toolbox to get FULL data
+        useRemoteDataToolbox;
+        
+        % configuration for Remote Data Toolbox
+        remoteDataToolboxConfig;
+        
         % summary report
         summaryReport;
     end
