@@ -1,5 +1,5 @@
 % Parse data "coordinates" like artifactId from a local file path.
-function [artifactId, remotePath] = RemoteDataCoordinatesForFilePath(dataFileName)
+function [remotePath, artifactId] = RemoteDataCoordinatesForFilePath(dataFileName)
     
     % parse remote data "coordinates" from the file path
     [dataFilePath, dataFileBase] = fileparts(dataFileName);

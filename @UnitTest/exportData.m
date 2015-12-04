@@ -37,11 +37,16 @@ function toRemoteDataToolbox(obj, dataFileName, runData)
     version = sprintf('run%05d', versionNumber);
     
     % write a temp file and publish it
-    tempFile = fullfile(tempdir(), 'exportData', 'artifactId.mat');
+    tempFolder = fullfile(tempdir(), 'exportData');
+    if 7 ~= exist(tempFolder, 'dir')
+        mkdir(tempFolder);
+    end
+    tempFile = fullfile(tempFolder(), [artifactId '.mat']);
     save(tempFile, '-struct', 'runData');
     client.publishArtifact(tempFile, ...
         'artifactId', artifactId, ...
         'version', version);
+    delete(tempFile);
 end
 
 % Export data to a local file.
