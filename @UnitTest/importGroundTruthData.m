@@ -11,25 +11,14 @@ end
 
 % Load remote data with Remote Data Toolbox.
 function [validationData, extraData, validationTime, hostInfo] = fromRemoteDataToolbox(obj, dataFileName)
-
+    
     % parse remote data "coordinates" from the file path
-    [dataFilePath, dataFileBase] = fileparts(dataFileName);
-    [~, dataFileSubfolder] = fileparts(dataFilePath);
-    nameParts = strsplit(dataFileBase, '_');
-    artifactId = nameParts{2};
-    
-    if numel(nameParts) >=3 && strcmp(nameParts{3}, 'FastGroundTruthDataHistory')
-        dataFlavor = 'fast';
-    else
-        dataFlavor = 'full';
-    end
-    
-    remotePath = rdtFullPath({'', 'validation', dataFlavor, dataFileSubfolder});
-
+    [remotePath, artifactId] = RemoteDataCoordinatesForFilePath(dataFileName);
+        
     % fetch the artifact data (defaults to latest version)
     client = RdtClient(obj.remoteDataToolboxConfig);
     client.crp(remotePath);
-        
+    
     try
         [runData, artifact] = client.readArtifact(artifactId, 'type', 'mat');
         
@@ -45,7 +34,7 @@ function [validationData, extraData, validationTime, hostInfo] = fromRemoteDataT
         hostInfo        = [];
         validationTime  = [];
         validationData  = [];
-        extraData       = [];        
+        extraData       = [];
     end
 end
 
@@ -58,22 +47,22 @@ function [validationData, extraData, validationTime, hostInfo] = fromLocalFile(o
         extraData       = [];
         return;
     end
-
+    
     if (obj.validationParams.verbosity > 3)
         fprintf('\tGround truth  file   : %s\n', dataFileName);
     end
-
+    
     if (obj.useMatfile)
         % create a MAT-file object for read access
         matOBJ = matfile(dataFileName);
-
+        
         % get current variables
         varList = who(matOBJ);
     else
         varList = who('-file', dataFileName);
     end
     
-    if (obj.validationParams.verbosity > 3) 
+    if (obj.validationParams.verbosity > 3)
         if (length(varList) == 1)
             fprintf('\tFull validation file : contains %d instance of historical data.\n', length(varList));
         else
