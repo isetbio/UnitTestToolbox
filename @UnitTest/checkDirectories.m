@@ -19,7 +19,7 @@ function cancelRun = checkDirectories(obj, projectSpecificPreferences)
     if ~(strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
   
         if  (strcmp(obj.validationParams.type, 'FULL')) || (strcmp(obj.validationParams.type, 'PUBLISH'))
-             if (~exist(obj.fullValidationDataDir, 'dir'))
+             if (~exist(obj.fullValidationDataDir, 'dir'))  && ~obj.useRemoteDataToolbox
                 if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
                     [generateDir, cancelRun] = obj.queryUserWhetherToReallyGenerateGroundTruth(obj.validationParams.type, []);
                     if (generateDir)
@@ -32,7 +32,7 @@ function cancelRun = checkDirectories(obj, projectSpecificPreferences)
         
         if (cancelRun == false)
             if  (strcmp(obj.validationParams.type, 'FAST')) || (strcmp(obj.validationParams.type, 'PUBLISH'))
-                if (~exist(obj.fastValidationDataDir, 'dir'))
+                if (~exist(obj.fastValidationDataDir, 'dir')) && ~obj.useRemoteDataToolbox
                     if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
                         [generateDir, cancelRun] = obj.queryUserWhetherToReallyGenerateGroundTruth(obj.validationParams.type, []);
                         if (generateDir)
