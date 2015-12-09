@@ -16,10 +16,10 @@ function cancelRun = checkDirectories(obj, projectSpecificPreferences)
     end
     
     % Check if validationData directory exists and create it, if it does not exist
-    if ~(strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
+    if  ~obj.useRemoteDataToolbox && ~(strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
   
         if  (strcmp(obj.validationParams.type, 'FULL')) || (strcmp(obj.validationParams.type, 'PUBLISH'))
-             if (~exist(obj.fullValidationDataDir, 'dir'))  && ~obj.useRemoteDataToolbox
+             if (~exist(obj.fullValidationDataDir, 'dir'))
                 if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
                     [generateDir, cancelRun] = obj.queryUserWhetherToReallyGenerateGroundTruth(obj.validationParams.type, []);
                     if (generateDir)
@@ -32,7 +32,7 @@ function cancelRun = checkDirectories(obj, projectSpecificPreferences)
         
         if (cancelRun == false)
             if  (strcmp(obj.validationParams.type, 'FAST')) || (strcmp(obj.validationParams.type, 'PUBLISH'))
-                if (~exist(obj.fastValidationDataDir, 'dir')) && ~obj.useRemoteDataToolbox
+                if (~exist(obj.fastValidationDataDir, 'dir'))
                     if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
                         [generateDir, cancelRun] = obj.queryUserWhetherToReallyGenerateGroundTruth(obj.validationParams.type, []);
                         if (generateDir)
@@ -43,7 +43,6 @@ function cancelRun = checkDirectories(obj, projectSpecificPreferences)
                 addpath(obj.fastValidationDataDir);
             end
         end
-        
     end
 end
 
