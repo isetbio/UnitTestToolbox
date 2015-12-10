@@ -1,17 +1,68 @@
 % Method to import a ground truth data entry
 function [validationData, extraData, validationTime, hostInfo] = importGroundTruthData(obj, dataFileName)
     
+    % Choose loading strategy and delegate to subfunction.
+    if (obj.useRemoteDataToolbox)
+        [validationData, extraData, validationTime, hostInfo] = fromRemoteDataToolbox(obj, dataFileName);
+    else
+        [validationData, extraData, validationTime, hostInfo] = fromLocalFile(obj, dataFileName);
+    end
+end
+
+% Load remote data with Remote Data Toolbox.
+function [validationData, extraData, validationTime, hostInfo] = fromRemoteDataToolbox(obj, dataFileName)
+    
+    % parse remote data "coordinates" from the file path
+    [remotePath, artifactId] = RemoteDataCoordinatesForFilePath(dataFileName);
+        
+    % fetch the artifact data (defaults to latest version)
+    client = RdtClient(obj.remoteDataToolboxConfig);
+    client.crp(remotePath);
+    
+    try
+        [runData, artifact] = client.readArtifact(artifactId, 'type', 'mat');
+        
+        if (obj.validationParams.verbosity > 3)
+            fprintf('\tGround truth  url    : %s\n', artifact.url);
+        end
+        
+        hostInfo        = runData.hostInfo;
+        validationTime  = runData.validationTime;
+        validationData  = runData.validationData;
+        extraData       = runData.extraData;
+    catch e
+        hostInfo        = [];
+        validationTime  = [];
+        validationData  = [];
+        extraData       = [];
+    end
+end
+
+% Load data from a local file.
+function [validationData, extraData, validationTime, hostInfo] = fromLocalFile(obj, dataFileName)
+    if (2 ~= exist(dataFileName, 'file'))
+        hostInfo        = [];
+        validationTime  = [];
+        validationData  = [];
+        extraData       = [];
+        return;
+    end
+    
+    if (obj.validationParams.verbosity > 3)
+        fprintf('\tGround truth  file   : %s\n', dataFileName);
+    end
+    
     if (obj.useMatfile)
         % create a MAT-file object for read access
         matOBJ = matfile(dataFileName);
-
+        
         % get current variables
         varList = who(matOBJ);
     else
         varList = who('-file', dataFileName);
     end
     
-    if (obj.validationParams.verbosity > 3) 
+    if (obj.validationParams.verbosity > 3)
         if (length(varList) == 1)
             fprintf('\tFull validation file : contains %d instance of historical data.\n', length(varList));
         else

@@ -16,7 +16,7 @@ function cancelRun = checkDirectories(obj, projectSpecificPreferences)
     end
     
     % Check if validationData directory exists and create it, if it does not exist
-    if ~(strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
+    if  ~obj.useRemoteDataToolbox && ~(strcmp(obj.validationParams.type, 'RUNTIME_ERRORS_ONLY'))
   
         if  (strcmp(obj.validationParams.type, 'FULL')) || (strcmp(obj.validationParams.type, 'PUBLISH'))
              if (~exist(obj.fullValidationDataDir, 'dir'))
@@ -43,7 +43,6 @@ function cancelRun = checkDirectories(obj, projectSpecificPreferences)
                 addpath(obj.fastValidationDataDir);
             end
         end
-        
     end
 end
 

@@ -34,7 +34,19 @@ function setValidationOptions(obj,varargin)
         obj.fullValidationDataDir = fullfile(obj.rootDir, 'data', 'full', filesep);
     else
         obj.fullValidationDataDir = alternateFullDataDir;
-    end   
+    end
+    
+    % Use the remote data toolbox?
+    useRemoteDataToolbox = getpref(theProjectName, 'useRemoteDataToolbox');
+    if (isempty(useRemoteDataToolbox))
+        obj.useRemoteDataToolbox = false;
+    else
+        obj.useRemoteDataToolbox = useRemoteDataToolbox;
+    end
+
+    % Configuration for remote data toolbox
+    remoteDataToolboxConfig = getpref(theProjectName, 'remoteDataToolboxConfig');
+    obj.remoteDataToolboxConfig = remoteDataToolboxConfig;
 end
 
 function checkValidationParams(validationParams)

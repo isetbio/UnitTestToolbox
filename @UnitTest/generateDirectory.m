@@ -10,7 +10,7 @@ function directoryExistedAlready = generateDirectory(obj, path, subDir)
     validationParams = obj.validationParams;
     
     if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
-        if (~exist(fullDir, 'dir'))
+        if (~exist(fullDir, 'dir')) && ~obj.useRemoteDataToolbox
             if (validationParams.verbosity > 4)
                 fprintf(2,'\nDirectory\n\t%s\n does not exist. Will create it. Hit enter to continue', fullDir);
                 pause;
