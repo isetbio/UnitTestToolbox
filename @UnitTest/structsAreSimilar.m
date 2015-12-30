@@ -207,9 +207,33 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
        % numeric values
        elseif (isnumeric(field1{k}))
            if (isnumeric(field2{k}))
-               if (any(field1{k} ~= field2{k}))
-                   resultIndex = numel(result)+1;
-                   result{resultIndex} = sprintf('Corresponding cell fields have different numeric values: ''%g'' vs. ''%g''.', field1{k}, field2{k});
+
+               if (numel(field1) == 1) && (numel(field2) == 1)
+                   if (any(field1{k} ~= field2{k}))
+                       resultIndex = numel(result)+1;
+                       result{resultIndex} = sprintf('Corresponding cell fields have different numeric values: ''%g'' vs. ''%g''.', field1{k}, field2{k});
+                   end
+               else
+                  subfield1 = field1{k};
+                  subfield2 = field2{k};
+                  if (any(size(subfield1)-size(subfield2)))
+                      result{resultIndex} = sprintf('Corresponding cell subfields have different dimensionalities\n');
+                  else
+                      % equal size numerics
+                      if (any(abs(subfield1 (:)-subfield2 (:)) > tolerance))
+                            figureName = '';
+                            if (graphMismatchedData)
+                                figureName = plotDataAndTheirDifference(obj, subfield1, subfield2, field1Name, field2Name);
+                            end
+                            resultIndex = numel(result)+1;
+                            maxDiff = max(abs(subfield1(:)-subfield2(:)));
+                            if (isempty(figureName))
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d (%g) is greater than the set tolerance (%g).', field1Name, field2Name, k, maxDiff, tolerance);
+                            else
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d (%g) is greater than the set tolerance (%g). See figure named: ''%s''', field1Name, field2Name, k, maxDiff, tolerance, figureName);
+                            end
+                       end
+                  end
                end
           else
               resultIndex = numel(result)+1;
