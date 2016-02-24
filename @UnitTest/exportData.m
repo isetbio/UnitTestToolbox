@@ -43,6 +43,7 @@ function toRemoteDataToolbox(obj, dataFileName, runData)
     end
     tempFile = fullfile(tempFolder(), [artifactId '.mat']);
     save(tempFile, '-struct', 'runData');
+    client.credentialsDialog();
     client.publishArtifact(tempFile, ...
         'artifactId', artifactId, ...
         'version', version);
