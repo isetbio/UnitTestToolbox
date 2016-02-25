@@ -233,6 +233,9 @@ classdef UnitTest < handle
         % Method to print the validationReport
         printValidationReport(validationReport);
         
+        % Method to display the nested structures
+        s = displayNicelyFormattedStruct(datum, datumName, s, maxFieldWidth);
+        
         % Method that prints all available validation scripts and asks the
         % user to select one for validation.
         scriptToValidate = selectScriptFromExistingOnes();
@@ -241,8 +244,7 @@ classdef UnitTest < handle
         % almost the same.
         assertIsZero(expression,msgString,tolerance);
         
-        % Method to implement an assert statement for things that should be
-        % true
+        % Method to implement an assert statement for things that should be true
         assert(expression,msgString);
     end
 end

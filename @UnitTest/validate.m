@@ -644,5 +644,16 @@ function [cancelRun, resultString] = doFullValidation(obj, fullLocalGroundTruthH
             end
             obj.exportData(dataFileName, validationData, extraData);
         end  % if (forceGenerateGroundTruth)
-    end % (~groundTruthFullValidationFailed)        
+    end % (~groundTruthFullValidationFailed)       
+    
+    if (validationParams.verbosity > 3) 
+        for k = 1:numel(mismatchReport)
+            if (strfind(mismatchReport{k}, 'Will not compare further'))
+                maxFieldWidth = 50;
+                s = UnitTest.displayNicelyFormattedStruct(groundTruthValidationData, 'groundTruthData', '', maxFieldWidth)
+                s = UnitTest.displayNicelyFormattedStruct(validationData, 'validationData', '', maxFieldWidth)
+            end
+        end
+    end
+        
 end
