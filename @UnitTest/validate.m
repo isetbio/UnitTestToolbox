@@ -105,69 +105,74 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FAST')
-            % Create fast validationData sub directory if it does not exist;
-            fastValidationDirectoryExistedAlready = obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
-            
-            if ((~fastValidationDirectoryExistedAlready) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')))
-                
-                if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
-                    
-                    if (validationParams.verbosity > 4)
-                        if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
-                            fprintf(2,'Hit enter to proceed.');
-                            pause
+            if (~obj.useRemoteDataToolbox)
+                % Create fast validationData sub directory if it does not exist;
+                fastValidationDirectoryExistedAlready = obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+
+                if ((~fastValidationDirectoryExistedAlready) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')))
+
+                    if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
+
+                        if (validationParams.verbosity > 4)
+                            if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
+                                fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                                fprintf(2,'Hit enter to proceed.');
+                                pause
+                            end
+                            if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+                                fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                                fprintf(2,'Hit enter to proceed.');
+                                pause
+                            end
                         end
-                        if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
-                            fprintf(2,'Hit enter to proceed.');
-                            pause
-                        end
+
+                        % The FAST validation data set directory did not exist already, or the FAST validation data set itseld did not exist,
+                        % Remove the FAST and the FULL validation data file for this script
+                        system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
+                        system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
+                        % And force a full validation, which will generate new data
+                        doFullValidationWhileInFastValidationMode = true;
+                        % Generate the full validation data directory, in case it does not exist
+                        obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
                     end
-                    
-                    % The FAST validation data set directory did not exist already, or the FAST validation data set itseld did not exist,
-                    % Remove the FAST and the FULL validation data file for this script
-                    system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
-                    system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
-                    % And force a full validation, which will generate new data
-                    doFullValidationWhileInFastValidationMode = true;
-                    % Generate the full validation data directory, in case it does not exist
-                    obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
                 end
             end
+            
             
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FULL')
             
-            % Create full validationData sub directory if it does not exist;
-            fullValidationDirectoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
-            
-            if ((~fullValidationDirectoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')))
-                
-                if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
-                    
-                    if (validationParams.verbosity > 4)
-                        if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
-                            fprintf(2,'Hit enter to proceed.');
-                            pause
+            if (~obj.useRemoteDataToolbox)
+                % Create full validationData sub directory if it does not exist;
+                fullValidationDirectoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+
+                if ((~fullValidationDirectoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')))
+
+                    if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
+
+                        if (validationParams.verbosity > 4)
+                            if  (~exist(fastLocalGroundTruthHistoryDataFile, 'file'))
+                                fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fastLocalGroundTruthHistoryDataFile, fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                                fprintf(2,'Hit enter to proceed.');
+                                pause
+                            end
+                            if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+                                fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                                fprintf(2,'Hit enter to proceed.');
+                                pause
+                            end
                         end
-                        if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
-                            fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FAST and FULL data\n\t%s\n\t%s.\n',fullLocalGroundTruthHistoryDataFile,fastLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
-                            fprintf(2,'Hit enter to proceed.');
-                            pause
-                        end
+
+                        % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
+                        % Remove the FAST and the FULL validation data file for this script
+                        system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
+                        system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
+                        % Generate the fast validation data directory, in case it does not exist
+                        obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
                     end
-                    
-                    % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
-                    % Remove the FAST and the FULL validation data file for this script
-                    system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
-                    system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
-                    % Generate the fast validation data directory, in case it does not exist
-                    obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
-               end
+                end
             end
 
             % Run script the regular way
@@ -180,12 +185,15 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             
             if ((~fullValidationDirectoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')) || (~exist(fastLocalGroundTruthHistoryDataFile, 'file')))
                 if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
-                    % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
-                    % remove the FAST and the FULL validation data file for this script
-                    system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
-                    system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
-                    % Generate the fast validation data directory, in case it does not exist
-                    obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+                    if (~obj.useRemoteDataToolbox)
+                        % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
+                        % remove the FAST and the FULL validation data file for this script
+                        system(sprintf('rm -f %s', fastLocalGroundTruthHistoryDataFile));
+                        system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
+                        % Generate the fast validation data directory, in case it does not exist
+                        obj.generateDirectory(obj.fastValidationDataDir, scriptSubDirectory);
+                    end
+                    
                 end
             end
             
