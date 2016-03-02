@@ -556,6 +556,8 @@ function [cancelRun, resultString] = doFullValidation(obj, fullLocalGroundTruthH
     end
                 
     [groundTruthValidationData, ~, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
+    mismatchReport = [];
+    
     if (~isempty(groundTruthValidationData))        
         
         % Compare validation data
