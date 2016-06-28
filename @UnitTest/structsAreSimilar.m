@@ -1,4 +1,4 @@
-function [structsAreSimilarWithinSpecifiedTolerance, result] = structsAreSimilar(obj, groundTruthData, validationData)
+function [structsAreSimilarWithinSpecifiedTolerance, result] = structsAreSimilar(obj, groundTruthData, validationData, customTolerances)
 
     tolerance           = obj.validationParams.numericTolerance;
     graphMismatchedData = obj.validationParams.graphMismatchedData;
@@ -8,7 +8,7 @@ function [structsAreSimilarWithinSpecifiedTolerance, result] = structsAreSimilar
     result = recursivelyCompareStructs(obj, ...
         'groundTruthData', groundTruthData, ...
         'validationData', validationData, ...
-        tolerance, graphMismatchedData, compareStringFields, result);
+        tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
                                    
     if (isempty(result))
         structsAreSimilarWithinSpecifiedTolerance = true;
@@ -17,7 +17,7 @@ function [structsAreSimilarWithinSpecifiedTolerance, result] = structsAreSimilar
     end
 end
 
-function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Name, struct2, tolerance, graphMismatchedData, compareStringFields, oldResult)
+function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Name, struct2, tolerance, customTolerances, graphMismatchedData, compareStringFields, oldResult)
 
     result = oldResult;
 
@@ -79,7 +79,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
        % compare structs
        if isstruct(field1)
            if isstruct(field2)
-                result = recursivelyCompareStructs(obj, field1Name, field1, field2Name, field2, tolerance, graphMismatchedData, compareStringFields, result);
+                result = recursivelyCompareStructs(obj, field1Name, field1, field2Name, field2, tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
            else
                 resultIndex = numel(result)+1;
                 result{resultIndex} = sprintf('''%s'' is a struct but ''%s'' is not.', field1Name, field2Name);
@@ -114,7 +114,8 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                         result{resultIndex} = sprintf('''%s'' is a [%s] matrix whereas ''%s'' is a [%s] matrix.', field1Name, sizeField1String, field2Name, sizeField2String);
                    else
                        % equal size numerics
-                       if (any(abs(field1(:)-field2(:)) > tolerance))
+                       toleranceEmployed = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
+                       if (any(abs(field1(:)-field2(:)) > toleranceEmployed))
                             figureName = '';
                             if (graphMismatchedData)
                                 figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name, field2Name);
@@ -122,9 +123,9 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                             resultIndex = numel(result)+1;
                             maxDiff = max(abs(field1(:)-field2(:)));
                             if (isempty(figureName))
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' (%g) is greater than the set tolerance (%g).', field1Name, field2Name, maxDiff, tolerance);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' (%g) is greater than the set tolerance (%g).', field1Name, field2Name, maxDiff, toleranceEmployed);
                             else
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' (%g) is greater than the set tolerance (%g). See figure named: ''%s''', field1Name, field2Name, maxDiff, tolerance, figureName);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' (%g) is greater than the set tolerance (%g). See figure named: ''%s''', field1Name, field2Name, maxDiff, toleranceEmployed, figureName);
                             end
                        end
                    end
@@ -169,7 +170,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                         result{resultIndex} = sprintf('''%s'' is a [%s] matrix whereas ''%s'' is a [%s] matrix.', field1Name, sizeField1String, field2Name, sizeField2String);
                    else
                         % equal size numerics
-                        result = CompareCellArrays(obj, field1Name, field1, field2Name, field2, tolerance, graphMismatchedData, compareStringFields, result);
+                        result = CompareCellArrays(obj, field1Name, field1, field2Name, field2, tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
                    end
                end
            else
@@ -186,7 +187,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
 end
 
 
-function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2, tolerance, graphMismatchedData, compareStringFields, result)
+function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2, tolerance, customTolerances, graphMismatchedData, compareStringFields, result)
 
    for k = 1:numel(field1) 
        
@@ -220,7 +221,8 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
                       result{resultIndex} = sprintf('Corresponding cell subfields have different dimensionalities\n');
                   else
                       % equal size numerics
-                      if (any(abs(subfield1 (:)-subfield2 (:)) > tolerance))
+                      toleranceEmployed = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
+                      if (any(abs(subfield1 (:)-subfield2 (:)) > toleranceEmployed))
                             figureName = '';
                             if (graphMismatchedData)
                                 figureName = plotDataAndTheirDifference(obj, subfield1, subfield2, field1Name, field2Name);
@@ -228,9 +230,9 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
                             resultIndex = numel(result)+1;
                             maxDiff = max(abs(subfield1(:)-subfield2(:)));
                             if (isempty(figureName))
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d (%g) is greater than the set tolerance (%g).', field1Name, field2Name, k, maxDiff, tolerance);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d (%g) is greater than the set tolerance (%g).', field1Name, field2Name, k, maxDiff, toleranceEmployed);
                             else
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d (%g) is greater than the set tolerance (%g). See figure named: ''%s''', field1Name, field2Name, k, maxDiff, tolerance, figureName);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d (%g) is greater than the set tolerance (%g). See figure named: ''%s''', field1Name, field2Name, k, maxDiff, toleranceEmployed, figureName);
                             end
                        end
                   end
@@ -243,7 +245,7 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
        % cells
        elseif (iscell(field1{k}))
            if (iscell(field2{k}))
-               result = CompareCellArrays(obj, field1Name, field1{k}, field2Name, field2{k}, tolerance, graphMismatchedData, compareStringFields, result);
+               result = CompareCellArrays(obj, field1Name, field1{k}, field2Name, field2{k}, tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
            else
               resultIndex = numel(result)+1;
               result{resultIndex} = sprintf('Corresponding cell fields have different types');
@@ -252,7 +254,7 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
        % structs
        elseif isstruct(field1{k})
            if isstruct(field2{k})
-                result = recursivelyCompareStructs(obj, field1Name, field1{k}, field2Name, field2{k}, tolerance, graphMismatchedData, compareStringFields, result);
+                result = recursivelyCompareStructs(obj, field1Name, field1{k}, field2Name, field2{k}, tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
            else
                 resultIndex = numel(result)+1;
                 result{resultIndex} = sprintf('''%s'' is a struct but ''%s'' is not.', field1Name, field2Name);
@@ -264,5 +266,4 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
           error(2,'UnitTest.structsAreSimilar.CompareCellArrays. non-char, non-numeric comparison not implemented\n');
        end
    end
-    
 end

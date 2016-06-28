@@ -21,127 +21,67 @@ function data = validationData(varargin)
         return;
     end
     
-    % Parse inputs
-    for k = 1:2:numel(varargin)
-        fieldName = varargin{k};
-        fieldValue = varargin{k+1};
-        % make sure field does not already exist
-        if ismember(fieldName, fieldnames(validationData))
-            fprintf(2,'\tField ''%s'' already exists in the validationData struct. Its value will be overriden.\n', fieldName);
-        end
+    % Get field name and its value
+    fieldName = varargin{1};
+    fieldValue = varargin{2};
+    % make sure field does not already exist in the validationData struct
+    if ismember(fieldName, fieldnames(validationData))
+        fprintf(2,'\tField ''%s'' already exists in the validationData struct. Its value will be overriden.\n', fieldName);
+    end
         
-        % save the full data
-        validationData.(fieldName) = fieldValue;
-       
-        % save truncated data in hashData.(fieldName)
-        if (isnumeric(fieldValue))
-            validationData.hashData.(fieldName) = UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
-        elseif (isstruct(fieldValue))
-            validationData.hashData.(fieldName) = roundStruct(fieldValue);
-        elseif (iscell(fieldValue))
-            validationData.hashData.(fieldName) = roundCellArray(fieldValue);
-        elseif (ischar(fieldValue))
-            % only add string field if we are comparing them
-            % get current project name
-            theProjectName = getpref('UnitTest', 'projectName');
-            compareStringFields = getpref(theProjectName, 'compareStringFields');
-            if (compareStringFields)
-                validationData.hashData.(fieldName) = fieldValue;
-                %fprintf('ADDING CHAR FIELD %s TO HASH DATA', fieldName); 
-            else
-                validationData.hashData.(fieldName) = '';
-                %fprintf('NOT ADDING CHAR FIELD %s TO HASH DATA', fieldName); 
+    
+    % Parse optional custom variable-tolerance pairs
+    customTolerances = struct();
+    
+    if (numel(varargin)>2)
+        if (strcmp(varargin{3}, 'UsingTheFollowingVariableTolerancePairs'))
+            if (mod(numel(varargin(4:end)),2) == 1)
+                error('Number of custom tolerance input arguments in UnitTest.validationDataWithCustomTolerances() must be even (key-value pairs)');
             end
-        elseif (islogical(fieldValue))
+
+            % Parse any passed custom tolerances
+            for k = 4:2:numel(varargin)
+                subfieldName = varargin{k};
+                subfieldTolerance = varargin{k+1};
+                if (strfind(subfieldName, '.'))
+                    subfieldName = strrep(subfieldName, sprintf('%s.', fieldName), '');
+                    eval(sprintf('customTolerances.%s = subfieldTolerance;', subfieldName));
+                else
+                    customTolerances = subfieldTolerance;
+                end
+            end
+            validationData.customTolerances.(fieldName) = customTolerances;
+        else
+            error('To specify custom tolerances, the third variable in UnitTest.validationData() must be the string ''UsingTheFollowingVariableTolerancePairs''. ');
+        end
+    end
+
+    % save the full data
+    validationData.(fieldName) = fieldValue;
+
+    % save truncated data in hashData.(fieldName)
+    if (isnumeric(fieldValue))
+        validationData.hashData.(fieldName) = UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
+    elseif (isstruct(fieldValue))
+        validationData.hashData.(fieldName) = UnitTest.roundStruct(fieldValue);
+    elseif (iscell(fieldValue))
+        validationData.hashData.(fieldName) = UnitTest.roundCellArray(fieldValue);
+    elseif (ischar(fieldValue))
+        % only add string field if we are comparing them
+        % get current project name
+        theProjectName = getpref('UnitTest', 'projectName');
+        compareStringFields = getpref(theProjectName, 'compareStringFields');
+        if (compareStringFields)
             validationData.hashData.(fieldName) = fieldValue;
+            %fprintf('ADDING CHAR FIELD %s TO HASH DATA', fieldName); 
         else
-            error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', fieldName, class(fieldValue));
-            %validationData.hashData.(fieldName) = fieldValue;
+            validationData.hashData.(fieldName) = '';
+            %fprintf('NOT ADDING CHAR FIELD %s TO HASH DATA', fieldName); 
         end
- 
-    end
-         
-end
-
-% Method to recursive round a struct
-function s = roundStruct(oldStruct)
-
-    s = oldStruct;
-    
-    if (isempty(s))
-        return;
-    end
-    
-    structFieldNames = fieldnames(s);
-    for k = 1:numel(structFieldNames)
-        
-        % get field
-        fieldValue = s.(structFieldNames{k});
-        
-        if isstruct(fieldValue)
-            s.(structFieldNames{k}) = roundStruct(fieldValue);
-        elseif ischar(fieldValue)
-            % Get current project name
-            theProjectName = getpref('UnitTest', 'projectName');
-            compareStringFields = getpref(theProjectName, 'compareStringFields');
-            if (compareStringFields)
-                %fprintf('ADDING CHAR FIELD %s TO HASH DATA', structFieldNames{k}); 
-            else
-                s.(structFieldNames{k}) = '';
-                %fprintf('NOT ADDING CHAR FIELD %s TO HASH DATA', structFieldNames{k}); 
-            end
-        elseif isnumeric(fieldValue)
-            s.(structFieldNames{k}) = UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
-        elseif iscell(fieldValue)
-            s.(structFieldNames{k}) = roundCellArray(fieldValue);
-        elseif (islogical(fieldValue))
-            s.(structFieldNames{k}) = fieldValue;
-        else
-            error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', structFieldNames{k}, class(fieldValue));
-        end
-    end
-    
-end
-
-
-% Method to recursive round a cellArray
-function cellArray = roundCellArray(oldCellArray)
-    cellArray = oldCellArray;
-    
-    for k = 1:numel(cellArray)
-        fieldValue = cellArray{k};
-        
-        % Char values
-        if ischar(fieldValue)
-            % Get current project name
-            theProjectName = getpref('UnitTest', 'projectName');
-            compareStringFields = getpref(theProjectName, 'compareStringFields');
-            if (compareStringFields)
-            else
-                cellArray{k} = '';
-                %fprintf('NOT ADDING CHAR FIELD TO HASH DATA'); 
-            end
-             
-        % Numeric values
-        elseif (isnumeric(fieldValue))
-            cellArray{k} = UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
-        
-        % Cells
-        elseif (iscell(fieldValue))
-            cellArray{k} = roundCellArray(fieldValue);
-            
-        % Logical
-        elseif (islogical(fieldValue))
-            cellArray{k} = fieldValue;
-            
-        % Struct
-         elseif (isstruct(fieldValue))
-             cellArray{k} = roundStruct(fieldValue);
-            
-        else
-            error('Do not know how to round cell entry which is of class type:''%s''. ',  class(fieldValue));
-        end
+    elseif (islogical(fieldValue))
+        validationData.hashData.(fieldName) = fieldValue;
+    else
+        error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', fieldName, class(fieldValue));
+        %validationData.hashData.(fieldName) = fieldValue;
     end
 end
-
-    
