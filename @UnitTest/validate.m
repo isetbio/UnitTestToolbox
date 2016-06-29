@@ -411,7 +411,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                         customToleranceFields = sprintf('%s, ', customToleranceFields);
                     end
                 end
-                summaryReportEntry.text{5} = sprintf('Full validation: PASSED <strong>(using custom tolerances for fields: {%s})</strong>', customToleranceFields);
+                summaryReportEntry.text{5} = sprintf('Full validation: PASSED ; <strong>(using custom tolerances for fields: {%s})</strong>', customToleranceFields);
                 summaryReportEntry.textIsBold{5} = false;
             end
         elseif (strcmp(resultStingFullValidation, 'FAILED'))

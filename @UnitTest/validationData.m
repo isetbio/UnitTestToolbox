@@ -55,17 +55,24 @@ function data = validationData(varargin)
             error('To specify custom tolerances, the third variable in UnitTest.validationData() must be the string ''UsingTheFollowingVariableTolerancePairs''. ');
         end
     end
-
+    
+    if (~isfield(validationData, 'customTolerances'))
+        validationData.customTolerances = [];
+    end
+    
     % save the full data
     validationData.(fieldName) = fieldValue;
 
+    globalTolerance = 10^(-UnitTest.decimalDigitNumRoundingForHashComputation);
+    
     % save truncated data in hashData.(fieldName)
     if (isnumeric(fieldValue))
-        validationData.hashData.(fieldName) = UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
+        toleranceEmployed = UnitTest.selectToleranceToEmploy(globalTolerance, validationData.customTolerances, fieldName);
+        validationData.hashData.(fieldName) = UnitTest.roundBeforeHashingGivenTolerance(fieldValue, toleranceEmployed); %UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
     elseif (isstruct(fieldValue))
-        validationData.hashData.(fieldName) = UnitTest.roundStruct(fieldValue);
+        validationData.hashData.(fieldName) = UnitTest.roundStructGivenTolerance(fieldValue, globalTolerance, validationData.customTolerances);  % UnitTest.roundStruct(fieldValue);
     elseif (iscell(fieldValue))
-        validationData.hashData.(fieldName) = UnitTest.roundCellArray(fieldValue);
+        validationData.hashData.(fieldName) = UnitTest.roundCellArrayGivenTolerance(fieldValue, globalTolerance, validationData.customTolerances); % UnitTest.roundCellArray(fieldValue);
     elseif (ischar(fieldValue))
         % only add string field if we are comparing them
         % get current project name

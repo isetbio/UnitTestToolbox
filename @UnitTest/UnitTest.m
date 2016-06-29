@@ -234,6 +234,8 @@ classdef UnitTest < handle
         % Method to round numeric values to N decimal digits
         roundedValue = roundToNdigits(numericValue, decimalDigits);
         
+        roundedValue = roundBeforeHashingGivenTolerance(numericValue, tolerance);
+        
         % Method to print the validationReport
         printValidationReport(validationReport);
         
@@ -254,6 +256,9 @@ classdef UnitTest < handle
         % Method to recursively round a struct
         s = roundStruct(oldStruct);
     
+        % Method to recursively round a struct (alternative to roundStruct)
+        s = roundStructGivenTolerance(oldStruct, globalTolerance, customTolerances)
+        
         % Method to implement an assert statement for things that should be
         % almost the same.
         assertIsZero(expression,msgString,tolerance);

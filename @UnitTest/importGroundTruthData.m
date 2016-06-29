@@ -1,6 +1,5 @@
 % Method to import a ground truth data entry
 function [validationData, extraData, validationTime, hostInfo] = importGroundTruthData(obj, dataFileName)
-    
     % Choose loading strategy and delegate to subfunction.
     if (obj.useRemoteDataToolbox)
         [validationData, extraData, validationTime, hostInfo] = fromRemoteDataToolbox(obj, dataFileName);
@@ -24,6 +23,7 @@ function [validationData, extraData, validationTime, hostInfo] = fromRemoteDataT
         
         if (obj.validationParams.verbosity > 3)
             fprintf('\tGround truth  url    : %s\n', artifact.url);
+            fprintf('\tGround truth  localP : %s\n', artifact.localPath);
         end
         
         hostInfo        = runData.hostInfo;
