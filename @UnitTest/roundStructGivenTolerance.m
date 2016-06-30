@@ -1,5 +1,5 @@
 % Method to recursive round a struct
-function s = roundStructGivenTolerance(oldStruct, globalTolerance, customTolerances)
+function s = roundStructGivenTolerance(oldStruct, structName, globalTolerance, customTolerances)
 
     s = oldStruct;
     
@@ -14,7 +14,7 @@ function s = roundStructGivenTolerance(oldStruct, globalTolerance, customToleran
         fieldValue = s.(structFieldNames{k});
         
         if isstruct(fieldValue)
-            s.(structFieldNames{k}) = UnitTest.roundStructGivenTolerance(fieldValue, globalTolerance, customTolerances);
+            s.(structFieldNames{k}) = UnitTest.roundStructGivenTolerance(fieldValue, sprintf('%s.%s', structName, structFieldNames{k}), globalTolerance, customTolerances);
         elseif ischar(fieldValue)
             % Get current project name
             theProjectName = getpref('UnitTest', 'projectName');
@@ -33,7 +33,7 @@ function s = roundStructGivenTolerance(oldStruct, globalTolerance, customToleran
         elseif (islogical(fieldValue))
             s.(structFieldNames{k}) = fieldValue;
         else
-            error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', structFieldNames{k}, class(fieldValue));
+            error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', sprintf('%s.%s', structName, structFieldNames{k}), class(fieldValue));
         end
     end
     

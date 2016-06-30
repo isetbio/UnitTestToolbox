@@ -257,7 +257,7 @@ classdef UnitTest < handle
         s = roundStruct(oldStruct);
     
         % Method to recursively round a struct (alternative to roundStruct)
-        s = roundStructGivenTolerance(oldStruct, globalTolerance, customTolerances)
+        s = roundStructGivenTolerance(oldStruct, structName, globalTolerance, customTolerances)
         
         % Method to implement an assert statement for things that should be
         % almost the same.

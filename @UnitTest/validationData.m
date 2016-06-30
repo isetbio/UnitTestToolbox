@@ -64,13 +64,14 @@ function data = validationData(varargin)
     validationData.(fieldName) = fieldValue;
 
     globalTolerance = 10^(-UnitTest.decimalDigitNumRoundingForHashComputation);
-    
+ 
+   
     % save truncated data in hashData.(fieldName)
     if (isnumeric(fieldValue))
         toleranceEmployed = UnitTest.selectToleranceToEmploy(globalTolerance, validationData.customTolerances, fieldName);
         validationData.hashData.(fieldName) = UnitTest.roundBeforeHashingGivenTolerance(fieldValue, toleranceEmployed); %UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
     elseif (isstruct(fieldValue))
-        validationData.hashData.(fieldName) = UnitTest.roundStructGivenTolerance(fieldValue, globalTolerance, validationData.customTolerances);  % UnitTest.roundStruct(fieldValue);
+        validationData.hashData.(fieldName) = UnitTest.roundStructGivenTolerance(fieldValue, fieldName, globalTolerance, validationData.customTolerances);  % UnitTest.roundStruct(fieldValue);
     elseif (iscell(fieldValue))
         validationData.hashData.(fieldName) = UnitTest.roundCellArrayGivenTolerance(fieldValue, globalTolerance, validationData.customTolerances); % UnitTest.roundCellArray(fieldValue);
     elseif (ischar(fieldValue))
