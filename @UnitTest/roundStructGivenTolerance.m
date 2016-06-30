@@ -26,7 +26,7 @@ function s = roundStructGivenTolerance(oldStruct, structName, globalTolerance, c
                 %fprintf('NOT ADDING CHAR FIELD %s TO HASH DATA', structFieldNames{k}); 
             end
         elseif isnumeric(fieldValue)
-            toleranceEmployed = UnitTest.selectToleranceToEmploy(globalTolerance, customTolerances, structFieldNames{k});
+            toleranceEmployed = UnitTest.selectToleranceToEmploy(globalTolerance, customTolerances, sprintf('%s.%s', structName, structFieldNames{k}));
             s.(structFieldNames{k}) = UnitTest.roundBeforeHashingGivenTolerance(fieldValue, toleranceEmployed); % UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
         elseif iscell(fieldValue)
             s.(structFieldNames{k}) = UnitTest.roundCellArrayGivenTolerance(fieldValue, globalTolerance, customTolerances);
