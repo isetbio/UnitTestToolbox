@@ -1,4 +1,4 @@
-% Method to recursive round a cellArray
+% Method to recursively round a cellArray
 function cellArray = roundCellArray(oldCellArray)
     cellArray = oldCellArray;
     

@@ -1,4 +1,4 @@
-% Method to recursive round a struct
+% Method to recursively round a struct, given custom tolerance
 function s = roundStructGivenTolerance(oldStruct, structName, globalTolerance, customTolerances)
 
     s = oldStruct;
@@ -29,7 +29,7 @@ function s = roundStructGivenTolerance(oldStruct, structName, globalTolerance, c
             toleranceEmployed = UnitTest.selectToleranceToEmploy(globalTolerance, customTolerances, sprintf('%s.%s', structName, structFieldNames{k}));
             s.(structFieldNames{k}) = UnitTest.roundBeforeHashingGivenTolerance(fieldValue, toleranceEmployed); % UnitTest.roundToNdigits(fieldValue, UnitTest.decimalDigitNumRoundingForHashComputation);
         elseif iscell(fieldValue)
-            s.(structFieldNames{k}) = UnitTest.roundCellArrayGivenTolerance(fieldValue, globalTolerance, customTolerances);
+            s.(structFieldNames{k}) = UnitTest.roundCellArrayGivenTolerance(fieldValue, sprintf('%s.%s', structName, structFieldNames{k}), globalTolerance, customTolerances);
         elseif (islogical(fieldValue))
             s.(structFieldNames{k}) = fieldValue;
         else

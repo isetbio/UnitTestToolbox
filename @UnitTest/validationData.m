@@ -73,7 +73,7 @@ function data = validationData(varargin)
     elseif (isstruct(fieldValue))
         validationData.hashData.(fieldName) = UnitTest.roundStructGivenTolerance(fieldValue, fieldName, globalTolerance, validationData.customTolerances);  % UnitTest.roundStruct(fieldValue);
     elseif (iscell(fieldValue))
-        validationData.hashData.(fieldName) = UnitTest.roundCellArrayGivenTolerance(fieldValue, globalTolerance, validationData.customTolerances); % UnitTest.roundCellArray(fieldValue);
+        validationData.hashData.(fieldName) = UnitTest.roundCellArrayGivenTolerance(fieldValue, fieldName, globalTolerance, validationData.customTolerances); % UnitTest.roundCellArray(fieldValue);
     elseif (ischar(fieldValue))
         % only add string field if we are comparing them
         % get current project name

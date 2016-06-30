@@ -259,6 +259,9 @@ classdef UnitTest < handle
         % Method to recursively round a struct (alternative to roundStruct)
         s = roundStructGivenTolerance(oldStruct, structName, globalTolerance, customTolerances)
         
+        % Method to recursively round a cellArray (alternative to roundCellArray)
+        cellArray = roundCellArrayGivenTolerance(fieldValue, fieldName, globalTolerance, customTolerances);
+        
         % Method to implement an assert statement for things that should be
         % almost the same.
         assertIsZero(expression,msgString,tolerance);
