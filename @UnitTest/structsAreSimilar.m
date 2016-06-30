@@ -210,9 +210,10 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
            if (isnumeric(field2{k}))
 
                if (numel(field1) == 1) && (numel(field2) == 1)
-                   if (any(field1{k} ~= field2{k}))
+                   toleranceEmployed = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
+                   if (abs(field1{1}-field2{1}) > toleranceEmployed)
                        resultIndex = numel(result)+1;
-                       result{resultIndex} = sprintf('Corresponding cell fields have different numeric values: ''%g'' vs. ''%g''.', field1{k}, field2{k});
+                       result{resultIndex} = sprintf('Corresponding cell fields have different numeric values: ''%g'' vs. ''%g''.', field1{1}, field2{1});
                    end
                else
                   subfield1 = field1{k};
@@ -222,7 +223,7 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
                   else
                       % equal size numerics
                       toleranceEmployed = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
-                      if (any(abs(subfield1 (:)-subfield2 (:)) > toleranceEmployed))
+                      if (any(abs(subfield1(:)-subfield2(:)) > toleranceEmployed))
                             figureName = '';
                             if (graphMismatchedData)
                                 figureName = plotDataAndTheirDifference(obj, subfield1, subfield2, field1Name, field2Name);
