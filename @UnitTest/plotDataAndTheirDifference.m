@@ -90,6 +90,11 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            row = 1;
            col = k;
            subplot('Position', posVectors(row,col).v);
+           size(field1)
+            if (~isreal(field1))
+               warndlg('Displaying the ABS(field2)', 'Complex Variable !!');
+               field2 = abs(field1);
+           end
            imagesc(squeeze(field1(:,:,k)));
            if (k == 1)
                ylabel(field1Name, 'Color', [1 0 0]);
@@ -106,6 +111,11 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            row = 2;
            col = k;
            subplot('Position', posVectors(row,col).v);
+           size(field2)
+           if (~isreal(field2))
+               warndlg('Displaying the ABS(field2)', 'Complex Variable !!');
+               field2 = abs(field2);
+           end
            imagesc(squeeze(field2(:,:,k)));
            if (k == 1)
                ylabel(field2Name, 'Color', [0 0 1]);
@@ -122,6 +132,10 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            row = 3;
            col = k;
            subplot('Position', posVectors(row,col).v);
+           if (~isreal(diff))
+               warndlg('Displaying the ABS(diff)', 'Complex Variable !!');
+               diff = abs(diff);
+           end
            imagesc(squeeze(diff(:,:,k)));
            if (k == 1)
                ylabel(sprintf('groundTruthData\n - validationData'));

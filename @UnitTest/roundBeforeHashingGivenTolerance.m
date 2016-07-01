@@ -8,12 +8,8 @@ function roundedValue = roundBeforeHashingGivenTolerance(numericValue, tolerance
     truncator = abs(tolerance);
     
     if (~isreal(numericValue))
-        warndlg('Rounding a complex variable', 'Complex Variable !!');
-        realValue = real(numericValue);
-        imagValue = imag(numericValue);
-        realRoundedValue = sign(realValue) .* round(abs(realValue/truncator)) * truncator;
-        imagRoundedValue = sign(imagValue) .* round(abs(imagValue/truncator)) * truncator;
-        roundedValue = realRoundedValue + 1i * imagRoundedValue;
+        warndlg(sprintf('Complex %d-dim Variable! Will compare ABS value.', ndims(numericValue)), sprintf('TOL:%g', tolerance));
+        roundedValue = round(abs(numericValue)/truncator) * truncator;
     else
         roundedValue = sign(numericValue) .* round(abs(numericValue/truncator)) * truncator;
     end
