@@ -8,6 +8,7 @@ function roundedValue = roundBeforeHashingGivenTolerance(numericValue, tolerance
     truncator = abs(tolerance);
     
     if (~isreal(numericValue))
+        warndlg('Rounding a complex variable', 'Complex Variable !!');
         realValue = real(numericValue);
         imagValue = imag(numericValue);
         realRoundedValue = sign(realValue) .* round(abs(realValue/truncator)) * truncator;
