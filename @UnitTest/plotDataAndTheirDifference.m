@@ -7,8 +7,33 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
     set(h, 'Name', figureName);
     clf;
     
-    
-    if (ndims(field1) == 2) && (all(size(field1) > 1))
+    if (numel(find(size(field1)>1)) == 1)
+        % essentially a 1D vector
+        field1 = field1(:);
+        field2 = field2(:);
+        
+        diff = field1 - field2;
+        minAll = min([min(field1(:)) min(field2(:))]);
+        maxAll = max([max(field1(:)) max(field2(:))]);
+        maxDiff = max(abs(diff(:)));
+        
+        set(h, 'Position', [100 100 1400 380]);
+        subplot(1,3,1);
+        plot(1:numel(field1), field1, 'r-');
+        set(gca, 'YLim', [minAll maxAll]);
+        title(sprintf('''%s''', field1Name));
+
+        subplot(1,3,2);
+        plot(1:numel(field2), field2, 'b-');
+        set(gca, 'YLim', [minAll maxAll]);
+        title(sprintf('''%s''', field2Name));
+
+        subplot(1,3,3);
+        plot(1:numel(field1), field1-field2, 'k-');
+        set(gca, 'YLim', maxDiff * [-1 1]);
+        title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
+        
+    elseif (ndims(field1) == 2) && (all(size(field1) > 1))
         
         diff = field1 - field2;
         minAll = min([min(field1(:)) min(field2(:))]);
@@ -90,7 +115,7 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            row = 1;
            col = k;
            subplot('Position', posVectors(row,col).v);
-           size(field1)
+           
             if (~isreal(field1))
                warndlg('Displaying the ABS(field2)', 'Complex Variable !!');
                field2 = abs(field1);
@@ -111,7 +136,7 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            row = 2;
            col = k;
            subplot('Position', posVectors(row,col).v);
-           size(field2)
+           
            if (~isreal(field2))
                warndlg('Displaying the ABS(field2)', 'Complex Variable !!');
                field2 = abs(field2);
