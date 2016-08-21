@@ -32,6 +32,8 @@ function s = roundStructGivenTolerance(oldStruct, structName, globalTolerance, c
             s.(structFieldNames{k}) = UnitTest.roundCellArrayGivenTolerance(fieldValue, sprintf('%s.%s', structName, structFieldNames{k}), globalTolerance, customTolerances);
         elseif (islogical(fieldValue))
             s.(structFieldNames{k}) = fieldValue;
+        elseif (isa(fieldValue, 'Lens'))
+            fprintf(2,'Will not round param ''%s'', which is of  class type:''%s''. ', sprintf('%s.%s', structName, structFieldNames{k}), class(fieldValue));
         else
             error('Do not know how to round param ''%s'', which is of  class type:''%s''. ', sprintf('%s.%s', structName, structFieldNames{k}), class(fieldValue));
         end
