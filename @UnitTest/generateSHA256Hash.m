@@ -361,7 +361,22 @@ function Engine = CoreHash(Data, Engine)
        Engine.update(typecast(uint16(Data(:)), 'uint8'));
     elseif isa(Data, 'function_handle')
        Engine = CoreHash(ConvertFuncHandle(Data), Engine);
+    % Lens isetbio object
+    elseif isa(Data, 'Lens')
+       % Make if a struct
+       warning('off', 'MATLAB:structOnObject')
+       Data = struct(Data);
+       warning('on', 'MATLAB:structOnObject')
+       
+       F      = sort(fieldnames(Data));  % Ignore order of fields
+       Engine = CoreHash(F, Engine);     % Catch the fieldnames
+       for iS = 1:numel(Data)            % Loop over elements of struct array
+          for iField = 1:length(F)       % Loop over fields
+             Engine = CoreHash(Data(iS).(F{iField}), Engine);
+          end
+       end
     else  % Most likely a user-defined object:
+       fprintf('UnitTest.generateSHA256Hash:: Unknown object\n');
        try
           Engine = CoreHash(ConvertObject(Data), Engine);
        catch

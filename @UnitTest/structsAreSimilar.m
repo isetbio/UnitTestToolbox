@@ -189,11 +189,20 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                    result{resultIndex} = sprintf('''%s'' is a cell but ''%s'' is not.', field1Name, field2Name);
                end
            
-           % oh oh... some custom class probably.
-           else
-                class(field1)
-                class(field2)
-                error('Do not know how to compare this class type');
+           % custom class, probably...
+           elseif ((isobject(field1)) && (isobject(field2)))
+                if (strcmp(class(field1), class(field2)))
+                    % same class objects, convert them to structs
+                    warning('off', 'MATLAB:structOnObject')
+                    field1 = struct(field1);
+                    field2 = struct(field2);
+                    warning('on', 'MATLAB:structOnObject')
+                    result = recursivelyCompareStructs(obj, field1Name, field1, field2Name, field2, tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
+                else
+                    error('''%s'' and ''%s'' are different classes.',field1Name, field2Name);
+                end
+            else
+                error('''%s'' and ''%s'' are not  compatible entities',field1Name, field2Name);
             end
         end  % for k
     end  % structIndex
@@ -266,8 +275,8 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
               result{resultIndex} = sprintf('Corresponding cell fields have different types');
            end
            
-       % structs
-       elseif isstruct(field1{k})
+        % structs
+        elseif isstruct(field1{k})
            if isstruct(field2{k})
                 result = recursivelyCompareStructs(obj, field1Name, field1{k}, field2Name, field2{k}, tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
            else
@@ -275,11 +284,21 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
                 result{resultIndex} = sprintf('''%s'' is a struct but ''%s'' is not.', field1Name, field2Name);
            end
            
-       % oh oh... some custom class probably.
-       else
-          class(field1{k})
-          class(field2{k})
-          error(2,'UnitTest.structsAreSimilar.CompareCellArrays. non-char, non-numeric comparison not implemented\n');
-       end
+        % custom class, probably...
+        elseif ((isobject(field1)) && (isobject(field2)))
+            if (strcmp(class(field1), class(field2)))
+                % same class objects, convert them to structs
+                warning('off', 'MATLAB:structOnObject')
+                field1 = struct(field1);
+                field2 = struct(field2);
+                warning('on', 'MATLAB:structOnObject')
+                result = recursivelyCompareStructs(obj, field1Name, field1, field2Name, field2, tolerance, customTolerances, graphMismatchedData, compareStringFields, result);
+            else
+                error('''%s'' and ''%s'' are different classes.',field1Name, field2Name);
+            end
+        else
+            error('''%s'' and ''%s'' are not  compatible entities',field1Name, field2Name);
+        end
+            
    end
 end
