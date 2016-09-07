@@ -321,8 +321,9 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
         resultStingFastValidation = '';
         resultStingFullValidation = '';
           
+        
         if (~strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')) 
-            if ( (strcmp(validationParams.type, 'FAST'))  && (~validationFailedFlag) && (~exceptionRaisedFlag) )
+            if ( (strcmp(validationParams.type, 'FAST'))  && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
                 [abortValidationSession, resultStingFastValidation] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
                 if (abortValidationSession == false) && (doFullValidationWhileInFastValidationMode)
@@ -334,7 +335,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                 end
             end
         
-            if ( (strcmp(validationParams.type, 'FULL')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
+            if ( (strcmp(validationParams.type, 'FULL'))  && (~exceptionRaisedFlag) )
                 % 'FAST' mode validation
                 [abortValidationSession, resultStingFastValidation] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName);
                 if (abortValidationSession == false)
@@ -384,6 +385,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
         drawnow;
         pause(0.01);
         
+
         if (strcmp(resultStingFastValidation, 'PASSED'))
             % Update summary report
             summaryReportEntry.text{4} = sprintf('Fast validation: PASSED ');
@@ -481,6 +483,7 @@ function [cancelRun, resultString] = doFastValidation(obj, fastLocalGroundTruthH
 
     % Try to get ground truth data from file or remote data toolbox.
     [groundTruthValidationData, ~, groundTruthTime, hostInfo] = obj.importGroundTruthData(dataFileName);
+
     if (~isempty(groundTruthValidationData))        
         % Compare validation data
         if (strcmp(groundTruthValidationData, hashSHA25))
