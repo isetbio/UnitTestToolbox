@@ -29,9 +29,9 @@ function toleranceEmployed = selectToleranceToEmploy(globalTolerance, customTole
     
     if ismember(drilledFieldName, names)
         eval(sprintf('toleranceEmployed = customTolerances.%s;', drilledFieldName));
-        fprintf('Tolerance for field %s: %g\n', fieldName, toleranceEmployed);
+        fprintf('\tValidating using custom tolerance for field %s: %g\n', fieldName, toleranceEmployed);
     else
-        fprintf(2,'%s is not a member\n', drilledFieldName); 
+        %fprintf(2,'%s is not a member\n', drilledFieldName); 
     end
     
 end
