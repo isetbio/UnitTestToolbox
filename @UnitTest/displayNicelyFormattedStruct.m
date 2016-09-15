@@ -33,8 +33,14 @@ function s = displayStruct(datum, datumName, s, maxFieldWidth)
             else
                 datumSizeAndType = sprintf('%15s  %-8s', datumSize, datumType);
             end
-        elseif ((isnumeric(datum) || (islogical(datum))) && (numel(datum) < 10))
-            datumString = sprintf('%g ', datum(:));
+        elseif (isnumeric(datum) || (islogical(datum)))
+            maxElementsToPrint = 20;
+            if (numel(datum) <= maxElementsToPrint)
+                datumString = sprintf('%g ', datum(:));
+            else
+                datumString = sprintf('%g ', datum(1:maxElementsToPrint));
+                datumString = sprintf('%s ...', datumString);
+            end
             datumSizeAndType = sprintf('%15s  %-8s ( %s)', datumSize, datumType, datumString);
         else
             datumSizeAndType = sprintf('%15s  %-8s', datumSize, datumType);
