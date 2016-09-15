@@ -33,6 +33,9 @@ function s = displayStruct(datum, datumName, s, maxFieldWidth)
             else
                 datumSizeAndType = sprintf('%15s  %-8s', datumSize, datumType);
             end
+        elseif ((isnumeric(datum) || (islogical(datum))) && (numel(datum) < 10))
+            datumString = sprintf('%g ', datum(:));
+            datumSizeAndType = sprintf('%15s  %-8s ( %s)', datumSize, datumType, datumString);
         else
             datumSizeAndType = sprintf('%15s  %-8s', datumSize, datumType);
         end
