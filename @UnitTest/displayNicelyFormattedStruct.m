@@ -1,5 +1,13 @@
 % Method to display a nicely formatted view of all the fields in a nested structure
-function s = displayNicelyFormattedStruct(datum, datumName, s, maxFieldWidth)
+function s = displayNicelyFormattedStruct(varargin)
+    if (nargin ~= 4)
+        error('Usage: displayNicelyFormattedStruct(structVar, structName, '''', maxFieldWidth)');
+    else
+        datum = varargin{1};
+        datumName = varargin{2};
+        s = varargin{3};
+        maxFieldWidth = varargin{4};
+    end
     s = displayStruct(datum, datumName, s, maxFieldWidth);
 end
 
@@ -15,6 +23,13 @@ function s = displayStruct(datum, datumName, s, maxFieldWidth)
                 datumSizeAndType = sprintf('%15s  %-8s (''%s'')', datumSize, datumType, datum);
             elseif (isnumeric(datum))
                 datumSizeAndType = sprintf('%15s  %-8s (%g)', datumSize, datumType, datum);
+            elseif (islogical(datum))
+                if (datum)
+                    datumString = 'true';
+                else
+                    datumString = 'false';
+                end
+                datumSizeAndType = sprintf('%15s  %-8s (%s)', datumSize, datumType, datumString);
             else
                 datumSizeAndType = sprintf('%15s  %-8s', datumSize, datumType);
             end
