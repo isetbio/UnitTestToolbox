@@ -43,7 +43,15 @@ function toRemoteDataToolbox(obj, dataFileName, runData)
     end
     tempFile = fullfile(tempFolder(), [artifactId '.mat']);
     save(tempFile, '-struct', 'runData');
-    client.credentialsDialog();
+    
+    % might need a password to write to repo
+    %   if credentials look complete, don't raise a dialog
+    %   also allow guest user to temporarily "un-guest" with dialog
+    if isempty(client.configuration.password) ...
+            && ~isempty(client.configuration.username)
+        client.credentialsDialog();
+    end
+    
     client.publishArtifact(tempFile, ...
         'artifactId', artifactId, ...
         'version', version);
