@@ -1,5 +1,14 @@
- % Method that prints all available validation scripts and asks the user to select one for validation.
-function scriptToValidate = selectScriptFromExistingOnes()
+% Method that prints all available validation scripts and asks the user to select one for validation.
+%
+% Optional key/value pairs
+%  'prompt' - string (default 'Enter script no. to validate/publish').
+%     Selection prompt string
+
+function scriptToValidate = selectScriptFromExistingOnes(varargin)
+
+p = inputParser;
+p.addParameter('prompt','Enter script no. to validate/publish',@ischar);
+p.parse(varargin{:});
 
     listingScript = UnitTest.getPref('listingScript');
     validationRootDir = UnitTest.getPref('validationRootDir');
@@ -41,7 +50,7 @@ function scriptToValidate = selectScriptFromExistingOnes()
             fprintf('\t%s %s %3d\n',  scriptsListInCurrentDirectory(scriptIndex).name, dots,totalScriptIndex);
         end
     end
-    selectedScriptIndex = input(sprintf('\nEnter script no. to validate/publish [%d-%d]: ', 1, totalScriptIndex));
+    selectedScriptIndex = input(sprintf(['\n' p.Results.prompt ' [%d-%d]: '], 1, totalScriptIndex));
     if (isempty(selectedScriptIndex)) || (~isnumeric(selectedScriptIndex))
         error('input must be a numeral');
     elseif (selectedScriptIndex <= 0) || (selectedScriptIndex > totalScriptIndex)
