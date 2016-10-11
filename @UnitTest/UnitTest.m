@@ -244,7 +244,7 @@ classdef UnitTest < handle
         
         % Method that prints all available validation scripts and asks the
         % user to select one for validation.
-        scriptToValidate = selectScriptFromExistingOnes();
+        scriptToValidate = selectScriptFromExistingOnes(varargin);
         
         % Method to select which tolerance to employ by checking if the
         % fieldName exists in customTolerances
