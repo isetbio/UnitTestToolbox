@@ -41,7 +41,7 @@ function toRemoteDataToolbox(obj, dataFileName, runData)
     if 7 ~= exist(tempFolder, 'dir')
         mkdir(tempFolder);
     end
-    tempFile = fullfile(tempFolder(), [artifactId '.mat']);
+    tempFile = fullfile(tempFolder, [artifactId '.mat']);
     save(tempFile, '-struct', 'runData');
     
     % might need a password to write to repo
