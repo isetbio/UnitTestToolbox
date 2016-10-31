@@ -40,6 +40,11 @@ function initializeUnitTest(obj)
     obj.hostInfo = struct();
     obj.hostInfo.matlabVersion    = version;
     obj.hostInfo.computer         = computer;
-    obj.hostInfo.computerAddress  = char(java.net.InetAddress.getLocalHost.getHostName);
+    try
+        obj.hostInfo.computerAddress  = char(java.net.InetAddress.getLocalHost.getHostName);
+    catch
+        [~, computerAddress] = unix('hostname');
+        obj.hostInfo.computerAddress = computerAddress;
+    end
     obj.hostInfo.userName         = char(java.lang.System.getProperty('user.name'));
 end
