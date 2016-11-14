@@ -85,7 +85,62 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
         title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
 
         
-    elseif (ndims(field1) == 3)
+    elseif (ndims(field1) == 3) && (size(field1,3) > size(field1,1)) && (size(field1,3) > size(field1,2)) && (size(field1,3) >100)
+        diff = field1 - field2;
+        minAll = min([min(field1(:)) min(field2(:))]);
+        maxAll = max([max(field1(:)) max(field2(:))]);
+        maxDiff = max(abs(diff(:)));
+        delta = (maxAll-minAll)/10;
+        
+        set(h, 'Position', [100 100 1400 600]);
+        
+        wMargin = 0.01;
+        posVectors = getSubPlotPosVectors(...
+            'rowsNum', 3, 'colsNum', size(field1,2)*size(field1,1), ...
+            'widthMargin', wMargin, 'heightMargin', 0.1, ...
+            'leftMargin', 0.02, ...
+            'bottomMargin', 0.01, 'topMargin', 0.05);
+        
+        for k = 1:size(field1,1)
+            for l = 1:size(field1,2)
+                subplot('Position', posVectors(1,(k-1)*size(field1,2)+l).v);
+                plot(squeeze(field1(k,l,:)), 'bs-', 'MarkerFaceColor', [0.8 0.8 1]);
+                if (k==1) && (l == 1)
+                    title(sprintf('''%s''', field1Name));
+                end
+                 set(gca, 'YLim', [minAll-delta maxAll+delta]);
+                set(gca, 'XLim', [1 size(field1,3)]);
+            end
+        end
+       
+        
+        for k = 1:size(field2,1)
+            for l = 1:size(field2,2)
+                subplot('Position', posVectors(2,(k-1)*size(field2,2)+l).v);
+                plot(squeeze(field2(k,l,:)), 'bs-', 'MarkerFaceColor', [0.8 0.8 1]);
+                if (k==1) && (l == 1)
+                    title(sprintf('''%s''', field2Name));
+                end
+                set(gca, 'YLim', [minAll-delta maxAll+delta]);
+                set(gca, 'XLim', [1 size(field1,3)]);
+            end
+        end
+        
+        
+        for k = 1:size(field2,1)
+            for l = 1:size(field2,2)
+                subplot('Position', posVectors(3,(k-1)*size(field2,2)+l).v);
+                plot(squeeze(field1(k,l,:)-field2(k,l,:)), 'bs-', 'MarkerFaceColor', [0.8 0.8 1]);
+                if (k==1) && (l == 1)
+                    title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
+                end
+                set(gca, 'YLim', double(maxDiff)*[-1.2 1.2]);
+                set(gca, 'XLim', [1 size(field1,3)]);
+            end
+        end
+        
+        
+    elseif (ndims(field1) == 3) && (size(field1,3) < 500)
         
         diff = field1 - field2;
         minAll = min([min(field1(:)) min(field2(:))]);
