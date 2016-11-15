@@ -125,6 +125,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                        else
                            % equal size numerics
                            toleranceEmployed = 0.5*UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
+                           fprintf('Data for ''%s''\n', field2Name);
                            [abs(field1(:)-field2(:)); toleranceEmployed]
                           
                            if (any(abs(field1(:)-field2(:)) > toleranceEmployed))
@@ -248,6 +249,7 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
                   else
                       % equal size numerics
                       toleranceEmployed = 0.5*UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
+                      fprintf('Data for ''%s''\n', field2Name);
                       [abs(subfield1(:)-subfield2(:)); toleranceEmployed]
                        
                       if (any(abs(subfield1(:)-subfield2(:)) > toleranceEmployed))
