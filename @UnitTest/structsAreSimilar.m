@@ -124,7 +124,7 @@ function result = recursivelyCompareStructs(obj, struct1Name, struct1, struct2Na
                             result{resultIndex} = sprintf('''%s'' is a [%s] matrix whereas ''%s'' is a [%s] matrix.', field1Name, sizeField1String, field2Name, sizeField2String);
                        else
                            % equal size numerics
-                           toleranceEmployed = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
+                           toleranceEmployed = 0.5*UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
                            if (any(abs(field1(:)-field2(:)) > toleranceEmployed))
                                 figureName = '';
                                 if (graphMismatchedData)
@@ -245,7 +245,7 @@ function result = CompareCellArrays(obj, field1Name, field1, field2Name, field2,
                       result{resultIndex} = sprintf('Corresponding cell subfields have different dimensionalities\n');
                   else
                       % equal size numerics
-                      toleranceEmployed = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
+                      toleranceEmployed = 0.5*UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
                       if (any(abs(subfield1(:)-subfield2(:)) > toleranceEmployed))
                             figureName = '';
                             if (graphMismatchedData)
