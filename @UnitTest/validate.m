@@ -178,6 +178,33 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             % Run script the regular way
             commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
+        elseif strcmp(validationParams.type, 'FULLONLY')
+            if (~obj.useRemoteDataToolbox)
+                % Create full validationData sub directory if it does not exist;
+                fullValidationDirectoryExistedAlready = obj.generateDirectory(obj.fullValidationDataDir, scriptSubDirectory);
+
+                if ((~fullValidationDirectoryExistedAlready) || (~exist(fullLocalGroundTruthHistoryDataFile, 'file')) )
+
+                    if (projectSpecificPreferences.generateGroundTruthDataIfNotFound)
+
+                        if (validationParams.verbosity > 4)
+                            if  (~exist(fullLocalGroundTruthHistoryDataFile, 'file'))
+                                fprintf(2,'\nValidation data file\n\t%s\ndoes not exist. Will generate new FULL data\n\t%s.\n',fullLocalGroundTruthHistoryDataFile, fullLocalGroundTruthHistoryDataFile);
+                                fprintf(2,'Hit enter to proceed.');
+                                pause
+                            end
+                        end
+
+                        % The FULL validation data set directory did not exist already, or the FULL validation data set itself did not exist.
+                        % Remove the FULL validation data file for this script
+                        system(sprintf('rm -f %s', fullLocalGroundTruthHistoryDataFile));
+                    end
+                end
+            end
+            
+            % Run script the regular way
+            commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
+                
         elseif strcmp(validationParams.type, 'PUBLISH')
             
             % Create full validationData sub directory if it does not exist;
@@ -345,6 +372,15 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                     % 'FULL' mode validation
                     [abortValidationSession, resultStingFullValidation, customTolerances] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
                 end
+            end
+            
+            if ( (strcmp(validationParams.type, 'FULLONLY'))  && (~exceptionRaisedFlag) )
+                abortValidationSession = false;
+                if (validationParams.verbosity > 1) 
+                    fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
+                end
+                % 'FULL' mode validation
+                [abortValidationSession, resultStingFullValidation, customTolerances] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )

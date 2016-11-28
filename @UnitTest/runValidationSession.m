@@ -5,7 +5,8 @@ function runValidationSession(vScriptsList, desiredMode)
         fprintf('\n\t 1. FASTEST (runtime errors only)');
         fprintf('\n\t 2. FAST    (runtime errors + data hash comparison)');
         fprintf('\n\t 3. FULL    (runtime errors + full data comparison)');
-        fprintf('\n\t 4. PUBLISH (runtime errors + full data comparison + github wiki update)');
+        fprintf('\n\t 4. FULL-ONLY    (runtime errors + full data comparison)');
+        fprintf('\n\t 5. PUBLISH (runtime errors + full data comparison + github wiki update)');
         typeID = input('\nEnter validation run mode [default = 1]: ', 's');
         if (str2double(typeID) == 1)
             desiredMode = 'RUN_TIME_ERRORS_ONLY';
@@ -13,7 +14,9 @@ function runValidationSession(vScriptsList, desiredMode)
             desiredMode = 'FAST';
         elseif (str2double(typeID) == 3)
             desiredMode = 'FULL';
-        elseif (str2double(typeID) == 4)
+        elseif (str2double(typeID) == 3)
+            desiredMode = 'FULLONLY';
+        elseif (str2double(typeID) == 5)
             desiredMode = 'PUBLISH';
         else
             desiredMode = 'RUN_TIME_ERRORS_ONLY';
@@ -26,8 +29,8 @@ function runValidationSession(vScriptsList, desiredMode)
     elseif (strcmp(desiredMode, 'FAST'))
         validateFast(vScriptsList);
         
-    elseif (strcmp(desiredMode, 'FULL'))
-        validateFull(vScriptsList);
+    elseif (strcmp(desiredMode, 'FULL')) || (strcmp(desiredMode, 'FULLONLY'))
+        validateFull(vScriptsList, desiredMode);
         
     elseif (strcmp(desiredMode, 'PUBLISH'))
         validatePublish(vScriptsList);
@@ -81,7 +84,7 @@ function validateFast(vScriptsList)
         
 end
 
-function validateFull(vScriptsList)
+function validateFull(vScriptsList, mode)
     
     % Instantiate a @UnitTest object
     UnitTestOBJ = UnitTest();
@@ -94,7 +97,7 @@ function validateFull(vScriptsList)
     
     % Set options for FULL validation
     UnitTestOBJ.setValidationOptions(...
-                'type',                     'FULL', ...
+                'type',                     mode, ...
                 'onRunTimeError',           getpref(theProjectName, 'onRunTimeErrorBehavior') ...
                 );
     

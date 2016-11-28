@@ -102,7 +102,7 @@ classdef UnitTest < handle
                                            '' ...
                                            };
         
-        validValidationTypes            = {'RUNTIME_ERRORS_ONLY', 'FAST', 'FULL', 'PUBLISH'};
+        validValidationTypes            = {'RUNTIME_ERRORS_ONLY', 'FAST', 'FULL', 'FULLONLY', 'PUBLISH'};
         validOnRunTimeErrorValues       = {'rethrowExceptionAndAbort', 'catchExceptionAndContinue'};
         validVerbosityLevels            = {'absolute zero', 'none', 'min', 'low', 'med', 'high', 'max'};
         
