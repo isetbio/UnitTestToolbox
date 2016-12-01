@@ -21,17 +21,17 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
         subplot(1,3,1);
         plot(1:numel(field1), field1, 'r-');
         set(gca, 'YLim', [minAll maxAll]);
-        title(sprintf('''%s''', field1Name));
+        title(sprintf('''%s''\n', field1Name));
 
         subplot(1,3,2);
         plot(1:numel(field2), field2, 'b-');
         set(gca, 'YLim', [minAll maxAll]);
-        title(sprintf('''%s''', field2Name));
+        title(sprintf('''%s''\n', field2Name));
 
         subplot(1,3,3);
         plot(1:numel(field1), field1-field2, 'k-');
         set(gca, 'YLim', maxDiff * [-1 1]);
-        title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
+        title(sprintf('''%s'' - \n''%s''\n', field1Name, field2Name));
         
     elseif (ndims(field1) == 2) && (all(size(field1) > 1))
         
@@ -45,19 +45,19 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
         imagesc(field1);
         colorbar
         set(gca, 'CLim', [minAll maxAll]);
-        title(sprintf('''%s''', field1Name));
+        title(sprintf('''%s''\n', field1Name));
 
         subplot(1,3,2);
         imagesc(field2);
         set(gca, 'CLim', [minAll maxAll]);
         colorbar
-        title(sprintf('''%s''', field2Name));
+        title(sprintf('''%s''\n', field2Name));
 
         subplot(1,3,3);
         imagesc(diff);
         set(gca, 'CLim', [-maxDiff maxDiff]);
         colorbar
-        title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
+        title(sprintf('''%s'' - \n''%s''\n', field1Name, field2Name));
         colormap(gray(256));
         
     elseif (ndims(field1) == 1) || ((ndims(field1)==2) && (any(size(field1)==1)))  
@@ -72,17 +72,17 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
         subplot(1,3,1);
         plot(field1, 'bs-', 'MarkerFaceColor', [0.8 0.8 1]);
         set(gca, 'YLim', [minAll-delta maxAll+delta]);
-        title(sprintf('''%s''', field1Name));
+        title(sprintf('''%s''\n', field1Name));
         
         subplot(1,3,2);
         plot(field2, 'bs-',  'MarkerFaceColor', [0.8 0.8 1]);
         set(gca, 'YLim', [minAll-delta maxAll+delta]);
-        title(sprintf('''%s''', field2Name));
+        title(sprintf('''%s''\n', field2Name));
         
         subplot(1,3,3);
         plot(field1 - field2, 'bs-',  'MarkerFaceColor', [0.8 0.8 1]);
         set(gca, 'YLim', double(maxDiff)*[-1.1 1.1]);
-        title(sprintf('''%s'' - \n''%s''', field1Name, field2Name));
+        title(sprintf('''%s'' - \n''%s''\n', field1Name, field2Name));
 
         
     elseif (ndims(field1) == 3) && (size(field1,3) > size(field1,1)) && (size(field1,3) > size(field1,2)) && (size(field1,3) >100)
