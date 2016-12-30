@@ -473,7 +473,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
         summaryReportEntry = obj.summaryReport{k};
         fprintf('%s ', summaryReportEntry.text{1});
 
-        timeLapsedText = sprintf('[%05.2f secs]', summaryReportEntry.timeLapsed);
+        timeLapsedText = sprintf('[%06.2f secs]', summaryReportEntry.timeLapsed);
         fprintf('%s ', timeLapsedText);
 
         for entryIndex = 2:numel(summaryReportEntry.text)
