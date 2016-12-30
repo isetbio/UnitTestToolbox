@@ -279,9 +279,43 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            
         end
         
+    elseif (ndims(field1) == 4)
         
-        colormap(gray(512));
+        minAll = min([min(field1(:)) min(field2(:))]);
+        maxAll = max([max(field1(:)) max(field2(:))]);
+        diff = field1-field2;
+        maxDiff = max(abs(diff(:)));
+        
+        for k = 1:size(field1,3)
+            sfield1 = squeeze(field1(:,1,k,:)); % reshape(field1(1,1,:,:), [sz(1)*sz(2) sz(3)*sz(4)]);
+            sfield2 = squeeze(field2(:,1,k,:)); %reshape(field2, [sz(1)*sz(2) sz(3)*sz(4)]);
+            diff = sfield1 - sfield2;
+        
+        
+            set(h, 'Position', [100 100 1400 380]);
+            subplot(size(field1,3),3,1 + (k-1)*size(field1,3));
+            imagesc(sfield1);
+            colorbar
+            set(gca, 'CLim', [minAll maxAll]);
+            title(sprintf('''%s''\n', field1Name));
+
+            subplot(size(field1,3),3,2 + (k-1)*size(field1,3));
+            imagesc(sfield2);
+            set(gca, 'CLim', [minAll maxAll]);
+            colorbar
+            title(sprintf('''%s''\n', field2Name));
+
+            subplot(size(field1,3),3,3 + (k-1)*size(field1,3));
+            imagesc(diff);
+            set(gca, 'CLim', [-maxDiff maxDiff]);
+            colorbar
+            title(sprintf('''%s'' - \n''%s''\n', field1Name, field2Name));
+        end
+        
     end
+    
+    colormap(gray(1024));
+    
     
 end
 
