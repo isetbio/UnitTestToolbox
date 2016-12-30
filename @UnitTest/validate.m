@@ -102,7 +102,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
         
         if strcmp(validationParams.type, 'RUNTIME_ERRORS_ONLY')
             % Run script the regular way
-            commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
+            commandString = sprintf(' [timeLapsed, validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FAST')
             if (~obj.useRemoteDataToolbox)
@@ -140,7 +140,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             
             
             % Run script the regular way
-            commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
+            commandString = sprintf(' [timeLapsed, validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FULL')
             
@@ -176,7 +176,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             end
 
             % Run script the regular way
-            commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
+            commandString = sprintf(' [timeLapsed, validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             
         elseif strcmp(validationParams.type, 'FULLONLY')
             if (~obj.useRemoteDataToolbox)
@@ -203,7 +203,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             end
             
             % Run script the regular way
-            commandString = sprintf(' [validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
+            commandString = sprintf(' [timeLapsed, validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
                 
         elseif strcmp(validationParams.type, 'PUBLISH')
             
@@ -230,7 +230,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             % Critical: Assign the params variable to the base workstation
             assignin('base', 'scriptRunParams', scriptRunParams);
             % Form publish options struct
-            command = sprintf('[validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
+            command = sprintf('[timeLapsed, validationReport, validationFailedFlag, validationFundamentalFailureFlag, validationData, extraData] = %s(scriptRunParams);', smallScriptName);
             options = struct(...
                 'codeToEvaluate', ['scriptRunParams;', char(10), sprintf('%s',command), char(10)'], ...
                 'evalCode',     true, ...
@@ -265,8 +265,8 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
         cd(localScriptDir);
         
         % Run the try-catch command and capture the output in T
-        T = evalc(command); 
-        
+        T = evalc(command);
+
         % back to current dir
         cd(currentDir);
         
@@ -278,6 +278,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                 validationFailedFlag = true;
                 validationFundamentalFailureFlag = false;
                 validationReport = '';
+                timeLapsed = nan;
                 if (strcmp(validationParams.onRunTimeError,'rethrowExceptionAndAbort'))
                     abortValidationSession = true;
                     break;
@@ -289,6 +290,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                 validationFundamentalFailureFlag = evalin('base', 'validationFundamentalFailureFlag');
                 validationData                   = evalin('base', 'validationData');
                 extraData                        = evalin('base', 'extraData');
+                timeLapsed                       = evalin('base', 'timeLapsed');
             end
         else
             if (exceptionRaisedFlag)
@@ -460,14 +462,20 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             summaryReportEntry.text{5} = sprintf('Full validation: NoTest ');
             summaryReportEntry.textIsBold{5} = false;
         end
-        
+       
+        summaryReportEntry.timeLapsed = timeLapsed; 
         obj.summaryReport{numel(obj.summaryReport)+1} = summaryReportEntry;
     end % scriptIndex
     
     fprintf('\n\n<strong> SUMMARY REPORT </strong>');
     for k = 1:numel(obj.summaryReport)
+        
         summaryReportEntry = obj.summaryReport{k};
         fprintf('%s ', summaryReportEntry.text{1});
+
+        timeLapsedText = sprintf('[%05.2f secs]', summaryReportEntry.timeLapsed);
+        fprintf('%s ', timeLapsedText);
+
         for entryIndex = 2:numel(summaryReportEntry.text)
             if (summaryReportEntry.textIsBold{entryIndex})
                 fprintf(2,'%s; ', summaryReportEntry.text{entryIndex});

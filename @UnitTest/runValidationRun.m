@@ -30,7 +30,9 @@ function returnItems = runValidationRun(functionHandle, originalNargout, varargi
     end
     
     %% Call the validation function
+    tic
     functionHandle(runTimeParams);
+    timeLapsed = toc;
 
     %% Reporting and return params
     if (originalNargout > 0)
@@ -38,7 +40,7 @@ function returnItems = runValidationRun(functionHandle, originalNargout, varargi
                           UnitTest.validationRecord('command', 'return');
         validationData  = UnitTest.validationData('command', 'return');
         extraData       = UnitTest.extraData('command', 'return');
-        returnItems     = {validationReport, validationFailedFlag, validationFundametalFailureFlag, validationData, extraData};
+        returnItems     = {timeLapsed, validationReport, validationFailedFlag, validationFundametalFailureFlag, validationData, extraData};
     else
         if (runTimeParams.printValidationReport)
             [validationReport, ~] = UnitTest.validationRecord('command', 'return');
