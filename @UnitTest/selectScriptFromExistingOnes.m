@@ -18,6 +18,8 @@ vScriptsList = eval(listingScript);
 totalScriptIndex = 0;
 scriptToValidate = '';
 
+dotsNum = 55;
+
 for scriptDirectoryIndex = 1:numel(vScriptsList)
     % get the current entry
     scriptListEntry = vScriptsList{scriptDirectoryIndex};
@@ -44,7 +46,7 @@ for scriptDirectoryIndex = 1:numel(vScriptsList)
         end
         scriptName{totalScriptIndex} = fullfile(scriptDirectoryName,scriptsListInCurrentDirectory(scriptIndex).name);
         dots = '';
-        for k = 1:50-numel(scriptsListInCurrentDirectory(scriptIndex).name)
+        for k = 1:dotsNum-numel(scriptsListInCurrentDirectory(scriptIndex).name)
             dots(k) = '.';
         end
         fprintf('\t%s %s %3d\n',  scriptsListInCurrentDirectory(scriptIndex).name, dots,totalScriptIndex);
