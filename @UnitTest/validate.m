@@ -43,6 +43,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
     while (scriptIndex < numel(obj.vScriptsList)) && (~abortValidationSession)
         
         scriptIndex = scriptIndex + 1;
+        timeLapsed = nan;
         
         % get the current entry
         scriptListEntry = obj.vScriptsList{scriptIndex};

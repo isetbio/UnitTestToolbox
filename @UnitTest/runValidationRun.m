@@ -30,9 +30,10 @@ function returnItems = runValidationRun(functionHandle, originalNargout, varargi
     end
     
     %% Call the validation function
-    tic
+    tBegin = clock;
     functionHandle(runTimeParams);
-    timeLapsed = toc;
+    tEnd = clock;
+    timeLapsed = etime(tEnd,tBegin);
 
     %% Reporting and return params
     if (originalNargout > 0)
