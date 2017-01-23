@@ -188,7 +188,7 @@ classdef UnitTest < handle
         closeAllNonDataMismatchFigures()
         
         % Executive method to run a validation session
-        runValidationSession(vScriptsList, desiredMode, verbosity);
+        [obj, sessionAborted] = runValidationSession(vScriptsList, desiredMode, verbosity);
         
         % Method to select project-specific preferences 
         usePreferencesForProject(projectName, initMode);

@@ -1,4 +1,4 @@
-function runValidationSession(vScriptsList, desiredMode)
+function [UnitTestOBJ, abortValidationSession] = runValidationSession(vScriptsList, desiredMode)
 
     if (nargin == 1)
         fprintf('\nAvailable validation modes:');
@@ -24,24 +24,26 @@ function runValidationSession(vScriptsList, desiredMode)
     end
     
     if (strcmp(desiredMode, 'RUN_TIME_ERRORS_ONLY'))
-        validateRunTimeErrors(vScriptsList);
+        [UnitTestOBJ, abortValidationSession] = validateRunTimeErrors(vScriptsList);
         
     elseif (strcmp(desiredMode, 'FAST'))
-        validateFast(vScriptsList);
+        [UnitTestOBJ, abortValidationSession] = validateFast(vScriptsList);
         
     elseif (strcmp(desiredMode, 'FULL')) || (strcmp(desiredMode, 'FULLONLY'))
-        validateFull(vScriptsList, desiredMode);
+        [UnitTestOBJ, abortValidationSession] = validateFull(vScriptsList, desiredMode);
         
     elseif (strcmp(desiredMode, 'PUBLISH'))
-        validatePublish(vScriptsList);
+        [UnitTestOBJ, abortValidationSession] = validatePublish(vScriptsList);
         
     else
+        UnitTestOBJ = [];
+        abortValidationSession = true;
         fprintf('Invalid selection. Run again.\n');
         return;
     end
 end
 
-function validateRunTimeErrors(vScriptsList)
+function [UnitTestOBJ, abortValidationSession] = validateRunTimeErrors(vScriptsList)
     % Instantiate a @UnitTest object
     UnitTestOBJ = UnitTest();
         
@@ -62,7 +64,7 @@ function validateRunTimeErrors(vScriptsList)
 end
 
 
-function validateFast(vScriptsList)
+function [UnitTestOBJ, abortValidationSession] = validateFast(vScriptsList)
 
     % Instantiate a @UnitTest object
     UnitTestOBJ = UnitTest();   
@@ -84,7 +86,7 @@ function validateFast(vScriptsList)
         
 end
 
-function validateFull(vScriptsList, mode)
+function [UnitTestOBJ, abortValidationSession] = validateFull(vScriptsList, mode)
     
     % Instantiate a @UnitTest object
     UnitTestOBJ = UnitTest();
@@ -107,7 +109,7 @@ function validateFull(vScriptsList, mode)
 end
 
 
-function validatePublish(vScriptsList)
+function [UnitTestOBJ, abortValidationSession] = validatePublish(vScriptsList)
 
     % Instantiate a @UnitTest object
     UnitTestOBJ = UnitTest();
