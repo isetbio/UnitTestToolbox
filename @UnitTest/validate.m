@@ -464,8 +464,8 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
             summaryReportEntry.textIsBold{5} = false;
         end
        
-        summaryReportEntry.fastFailed = strcmp(resultStingFastValidation, 'FAILED');
-        summaryReportEntry.fullFailed = strcmp(resultStingFullValidation, 'FAILED');
+        summaryReportEntry.fastFailed = exceptionRaisedFlag || validationFailedFlag || strcmp(resultStingFastValidation, 'FAILED');
+        summaryReportEntry.fullFailed = exceptionRaisedFlag || validationFailedFlag || strcmp(resultStingFullValidation, 'FAILED');
         summaryReportEntry.timeLapsed = timeLapsed; 
         obj.summaryReport{numel(obj.summaryReport)+1} = summaryReportEntry;
     end % scriptIndex
