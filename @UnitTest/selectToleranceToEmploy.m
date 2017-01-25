@@ -1,8 +1,8 @@
 % Method to select which tolerance to employ by checking if the fieldName exists in customTolerances
-function toleranceEmployed = selectToleranceToEmploy(globalTolerance, customTolerances, fieldName)
+function [toleranceEmployed, isCustom] = selectToleranceToEmploy(globalTolerance, customTolerances, fieldName)
     toleranceEmployed = globalTolerance;
+    isCustom = false;
     
-    %disp('---')
     %fieldName
     fieldName = strrep(fieldName, 'validationData.', '');
     fieldName = strrep(fieldName, 'validationData(1).', '');
@@ -24,14 +24,11 @@ function toleranceEmployed = selectToleranceToEmploy(globalTolerance, customTole
     else
        names = customTolerances;
     end
-    %disp('---')
 
-    
     if ismember(drilledFieldName, names)
         eval(sprintf('toleranceEmployed = customTolerances.%s;', drilledFieldName));
         fprintf('\tValidating using custom tolerance for field %s: %g\n', fieldName, toleranceEmployed);
-    else
-        %fprintf(2,'%s is not a member\n', drilledFieldName); 
+        isCustom = true;
     end
     
 end

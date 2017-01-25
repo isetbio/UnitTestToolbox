@@ -361,7 +361,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                         fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                     end
                     % 'FULL' mode validation
-                    [abortValidationSession, resultStingFullValidation, customTolerances] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
+                    [abortValidationSession, resultStingFullValidation, customTolerances, customToleranceFields] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
                 end
             end
         
@@ -373,7 +373,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                         fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                     end
                     % 'FULL' mode validation
-                    [abortValidationSession, resultStingFullValidation, customTolerances] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
+                    [abortValidationSession, resultStingFullValidation, customTolerances, customToleranceFields] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
                 end
             end
             
@@ -383,7 +383,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                     fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                 end
                 % 'FULL' mode validation
-                [abortValidationSession, resultStingFullValidation, customTolerances] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
+                [abortValidationSession, resultStingFullValidation, customTolerances, customToleranceFields] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName);
             end
             
             if ( (strcmp(validationParams.type, 'PUBLISH')) && (~validationFailedFlag) && (~exceptionRaisedFlag) )
@@ -394,7 +394,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                         fprintf('\t---------------------------------------------------------------------------------------------------------------------------------\n');
                     end
                     % 'FULL' mode validation
-                    [abortValidationSession, resultStingFullValidation, customTolerances] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName); 
+                    [abortValidationSession, resultStingFullValidation, customTolerances, customToleranceFields] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName); 
 
                     % Construct sectionData for github wiki
                     sectionName = scriptSubDirectory;
@@ -444,15 +444,7 @@ function abortValidationSession = validate(obj, vScriptsToRunList)
                 summaryReportEntry.text{5} = sprintf('Full validation: PASSED ');
                 summaryReportEntry.textIsBold{5} = false;
             else
-                fnames = fieldnames(customTolerances);
-                customToleranceFields = '';
-                for k = 1:numel(fnames)
-                    customToleranceFields = sprintf('%s''%s''', customToleranceFields, fnames{k});
-                    if (numel(fnames)>1) && (k < numel(fnames))
-                        customToleranceFields = sprintf('%s, ', customToleranceFields);
-                    end
-                end
-                summaryReportEntry.text{5} = sprintf('Full validation: PASSED ; <strong>(using custom tolerances for fields: {%s})</strong>', customToleranceFields);
+                summaryReportEntry.text{5} = sprintf('Full validation: PASSED ; <strong>(using custom tolerances for some fields)</strong>');
                 summaryReportEntry.textIsBold{5} = false;
             end
         elseif (strcmp(resultStingFullValidation, 'FAILED'))
@@ -506,9 +498,10 @@ end
 
 
 
-function [cancelRun, resultString] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName)
+function [cancelRun, resultString, customToleranceFields] = doFastValidation(obj, fastLocalGroundTruthHistoryDataFile, validationData, projectSpecificPreferences, smallScriptName)
 
     cancelRun = false;
+    customToleranceFields = {};
     
     validationParams = obj.validationParams;
     groundTruthFastValidationFailed = false;
@@ -604,9 +597,10 @@ function [cancelRun, resultString] = doFastValidation(obj, fastLocalGroundTruthH
 end
 
 
-function [cancelRun, resultString, customTolerances] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName)
+function [cancelRun, resultString, customTolerances, customToleranceFields] = doFullValidation(obj, fullLocalGroundTruthHistoryDataFile, validationData, extraData, projectSpecificPreferences, smallScriptName)
 
     cancelRun = false;
+    customToleranceFields = {};
     
     validationParams = obj.validationParams;
     groundTruthFullValidationFailed = false;
@@ -639,23 +633,20 @@ function [cancelRun, resultString, customTolerances] = doFullValidation(obj, ful
     if (~isempty(groundTruthValidationData))        
         
         % Compare validation data
-        [structsAreSimilarWithinSpecifiedTolerance, mismatchReport] = ...
+        [structsAreSimilarWithinSpecifiedTolerance, mismatchReport, customToleranceFieldsArray] = ...
             obj.structsAreSimilar(groundTruthValidationData, validationData, customTolerances);
 
         if (structsAreSimilarWithinSpecifiedTolerance)
+            customToleranceFields = '';
+            for k = 1:numel(customToleranceFieldsArray)
+                customToleranceFields = sprintf('%s''%s''', customToleranceFields, customToleranceFieldsArray{k});
+            end
+                    
             if (validationParams.verbosity > 0) 
                 if (isempty(customTolerances))
                     fprintf('\tFull validation      : PASSED against ground truth data of %s.\n', groundTruthTime);
                 else
-                    fnames = fieldnames(customTolerances);
-                    customToleranceFields = '';
-                    for k = 1:numel(fnames)
-                        customToleranceFields = sprintf('%s''%s''', customToleranceFields, fnames{k});
-                        if (numel(fnames)>1) && (k < numel(fnames))
-                            customToleranceFields = sprintf('%s, ', customToleranceFields);
-                        end
-                    end
-                    fprintf('\tFull validation      : PASSED <strong>using custom tolerance for fields: {%s} </strong> against ground truth data of %s.\n', customToleranceFields, groundTruthTime);
+                    fprintf('\tFull validation      : PASSED <strong>using custom tolerance for some fields (listed above) </strong> against ground truth data of %s.\n', groundTruthTime);
                 end
                 if (validationParams.verbosity > 2) 
                     fprintf('\t > Ground truth info : %30s / %s, MATLAB %s by ''%s''\n', hostInfo.computerAddress, hostInfo.computer, hostInfo.matlabVersion, hostInfo.userName);
@@ -747,5 +738,4 @@ function [cancelRun, resultString, customTolerances] = doFullValidation(obj, ful
             end
         end
     end
-        
 end

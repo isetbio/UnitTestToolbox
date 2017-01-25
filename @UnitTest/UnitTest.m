@@ -159,7 +159,7 @@ classdef UnitTest < handle
         vScriptsList = parseScriptsList(obj, vScriptsToRunList);
     
         % Method to recursively compare two struct for equality
-        [structsAreSimilarWithinSpecifiedTolerance, result] = structsAreSimilar(obj, groundTruthData, validationData, customTolerances);
+        [structsAreSimilarWithinSpecifiedTolerance, result, customToleranceFieldsArray] = structsAreSimilar(obj, groundTruthData, validationData, customTolerances);
         
         % Method to plot mistmatched validation data and their difference
         figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name, field2Name);
@@ -248,7 +248,7 @@ classdef UnitTest < handle
         
         % Method to select which tolerance to employ by checking if the
         % fieldName exists in customTolerances
-        toleranceEmployed = selectToleranceToEmploy(globalTolerance, customTolerances, fieldName);
+        [toleranceEmployed, isCustom] = selectToleranceToEmploy(globalTolerance, customTolerances, fieldName);
         
         % Method to recursively round a cellArray
         cellArray = roundCellArray(oldCellArray);
