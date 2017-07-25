@@ -205,6 +205,9 @@ classdef UnitTest < handle
         % Method to publish a project's tutorials
         publishProjectTutorials(p, scriptsToSkip, scriptCollection)
         
+        % Method to run a project's tutorials, testing but not publishing.
+        runProjectTutorials(p, scriptsToSkip, scriptCollection)
+        
         % Method to run a validation run.
         % Every validation script must call this method in its wrapper function
         varargout = runValidationRun(functionHandle, originalNargout, varargin);
