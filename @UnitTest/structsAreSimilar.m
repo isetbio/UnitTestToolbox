@@ -126,7 +126,6 @@ function [result, customToleranceFieldsArray] = recursivelyCompareStructs(obj, s
                        else
                            % equal size numerics
                            [toleranceEmployed, isCustom] = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
-                           toleranceEmployed = 0.5*toleranceEmployed;
                            if (isCustom)
                                customToleranceFieldsArray{numel(customToleranceFieldsArray)+1} = field2Name;
                            end
@@ -255,7 +254,6 @@ function [result, customToleranceFieldsArray] = CompareCellArrays(obj, field1Nam
                   else
                       % equal size numerics
                       [toleranceEmployed, isCustom] = UnitTest.selectToleranceToEmploy(tolerance, customTolerances, field2Name);
-                      toleranceEmployed = 0.5*toleranceEmployed;
                       if (isCustom)
                          customToleranceFieldsArray{numel(customToleranceFieldsArray)+1} = field2Name;
                       end
