@@ -173,7 +173,7 @@ function figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name
            
             if (~isreal(field1))
                warndlg('Displaying the ABS(field2)', 'Complex Variable !!');
-               field2 = abs(field1);
+               field1 = abs(field1);
            end
            imagesc(squeeze(field1(:,:,k)));
            if (k == 1)
