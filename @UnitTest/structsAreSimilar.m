@@ -136,11 +136,12 @@ function [result, customToleranceFieldsArray] = recursivelyCompareStructs(obj, s
                                     figureName = plotDataAndTheirDifference(obj, field1, field2, field1Name, field2Name);
                                 end
                                 resultIndex = numel(result)+1;
-                                maxDiff = max(abs(field1(:)-field2(:)));
+                                [maxDiff, indexOfMaxDiff] = max(abs(field1(:)-field2(:)));
+                                groundTruthValueCorrespondingToMaxDiff = field1(ind2sub(size(field1), indexOfMaxDiff));
                                 if (isempty(figureName))
-                                    result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' <strong>(%g)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, maxDiff, toleranceEmployed);
+                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed);
                                 else
-                                    result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' <strong>(%g)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, maxDiff, toleranceEmployed, figureName);
+                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed, figureName);
                                 end
                            end
                        end
@@ -211,7 +212,6 @@ function [result, customToleranceFieldsArray] = recursivelyCompareStructs(obj, s
             end
         end  % for k
     end  % structIndex
-    
 end
 
 
@@ -263,11 +263,12 @@ function [result, customToleranceFieldsArray] = CompareCellArrays(obj, field1Nam
                                 figureName = plotDataAndTheirDifference(obj, subfield1, subfield2, field1Name, field2Name);
                             end
                             resultIndex = numel(result)+1;
-                            maxDiff = max(abs(subfield1(:)-subfield2(:)));
+                            [maxDiff, indexOfMaxDiff] = max(abs(subfield1(:)-subfield2(:)));
+                            groundTruthValueCorrespondingToMaxDiff = field1(ind2sub(size(subfield1), indexOfMaxDiff));
                             if (isempty(figureName))
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, k, maxDiff, toleranceEmployed);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, k, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed);
                             else
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, k, maxDiff, toleranceEmployed, figureName);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, k, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed, figureName);
                             end
                        end
                   end
