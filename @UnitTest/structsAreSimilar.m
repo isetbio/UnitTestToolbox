@@ -138,10 +138,11 @@ function [result, customToleranceFieldsArray] = recursivelyCompareStructs(obj, s
                                 resultIndex = numel(result)+1;
                                 [maxDiff, indexOfMaxDiff] = max(abs(field1(:)-field2(:)));
                                 groundTruthValueCorrespondingToMaxDiff = field1(ind2sub(size(field1), indexOfMaxDiff));
+                                changePercentage = abs(100*maxDiff/groundTruthValueCorrespondingToMaxDiff);
                                 if (isempty(figureName))
-                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed);
+                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g, change: %2.1f%%)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, changePercentage, toleranceEmployed);
                                 else
-                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed, figureName);
+                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g, change: %2.1f%%)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, changePercentage, toleranceEmployed, figureName);
                                 end
                            end
                        end
@@ -265,10 +266,11 @@ function [result, customToleranceFieldsArray] = CompareCellArrays(obj, field1Nam
                             resultIndex = numel(result)+1;
                             [maxDiff, indexOfMaxDiff] = max(abs(subfield1(:)-subfield2(:)));
                             groundTruthValueCorrespondingToMaxDiff = field1(ind2sub(size(subfield1), indexOfMaxDiff));
+                            changePercentage = abs(100*maxDiff/groundTruthValueCorrespondingToMaxDiff);
                             if (isempty(figureName))
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, k, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g, ground truth: %g, change: %2.1f%%)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, k, maxDiff, groundTruthValueCorrespondingToMaxDiff, changePercentage, toleranceEmployed);
                             else
-                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g, ground truth: %g)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, k, maxDiff, groundTruthValueCorrespondingToMaxDiff, toleranceEmployed, figureName);
+                                result{resultIndex} = sprintf('Max difference between ''%s'' and ''%s'' at index %d <strong>(%g, ground truth: %g, change: %2.1f%%)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, k, maxDiff, groundTruthValueCorrespondingToMaxDiff, changePercentage, toleranceEmployed, figureName);
                             end
                        end
                   end
