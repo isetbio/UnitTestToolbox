@@ -1,6 +1,12 @@
+function status = runProjectTutorials(p, scriptsToSkip, scriptCollection)
 % Method to run a project's tutorials
-function runProjectTutorials(p, scriptsToSkip, scriptCollection)
-
+%
+% Syntax:
+%    status = runProjectTutorials(p, scriptsToSkip, scriptCollection)
+%
+% Outputs:
+%    status    - Returns true if all ran OK, false otherwise.
+% 
     % Unload params struct
     % These are:
     % - rootDirectory
@@ -66,6 +72,9 @@ function runProjectTutorials(p, scriptsToSkip, scriptCollection)
             fprintf(2,'BROKEN!\n');   
         end
     end
+    
+    %% Return status
+    status = all(tutorialsOK);
     
 end
 
