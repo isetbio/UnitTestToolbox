@@ -66,7 +66,7 @@ function status = runProjectTutorials(p, scriptsToSkip, scriptCollection)
         fprintf('%s -- ',filesList{ii});
         if (tutorialOK(ii) == 1)
             fprintf('OK!\n'); 
-        elseif (tutorialOK(ii) == -1);
+        elseif (tutorialOK(ii) == -1)
             fprintf('SKIPPED\n');
         else
             fprintf(2,'BROKEN!\n');   
@@ -74,7 +74,7 @@ function status = runProjectTutorials(p, scriptsToSkip, scriptCollection)
     end
     
     %% Return status
-    status = all(tutorialsOK);
+    status = all(tutorialOK);
     
 end
 
