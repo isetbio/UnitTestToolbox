@@ -138,11 +138,14 @@ function [result, customToleranceFieldsArray] = recursivelyCompareStructs(obj, s
                                 resultIndex = numel(result)+1;
                                 [maxDiff, indexOfMaxDiff] = max(abs(field1(:)-field2(:)));
                                 groundTruthValueCorrespondingToMaxDiff = field1(ind2sub(size(field1), indexOfMaxDiff));
-                                changePercentage = abs(100*maxDiff/groundTruthValueCorrespondingToMaxDiff);
+                                localDataValueCorrespondingToMaxDiff = field2(ind2sub(size(field2), indexOfMaxDiff));
+                                %changePercentage = abs(100*maxDiff/groundTruthValueCorrespondingToMaxDiff);
                                 if (isempty(figureName))
-                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g, change: %2.1f%%)</strong> is greater than the set tolerance <strong>(%g)</strong>.', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, changePercentage, toleranceEmployed);
+                                    result{resultIndex} = sprintf('''%s'' and ''%s'' with values <strong>(%g, %g)</strong>, respectively, differ by %g, which is greater than the set tolerance <strong>(%g)</strong>.', ...
+                                        field1Name, field2Name,  groundTruthValueCorrespondingToMaxDiff, localDataValueCorrespondingToMaxDiff, maxDiff, toleranceEmployed);
                                 else
-                                    result{resultIndex} = sprintf('Max diff. between ''%s'' and ''%s'' <strong>(%g, ground truth: %g, change: %2.1f%%)</strong> is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', field1Name, field2Name, maxDiff, groundTruthValueCorrespondingToMaxDiff, changePercentage, toleranceEmployed, figureName);
+                                    result{resultIndex} = sprintf('''%s'' and ''%s'' with values <strong>(%g, %g)</strong>, respectively, differ by %g, which is greater than the set tolerance <strong>(%g)</strong>. See figure named: ''%s''', ...
+                                        field1Name, field2Name, groundTruthValueCorrespondingToMaxDiff, localDataValueCorrespondingToMaxDiff,  maxDiff, toleranceEmployed, figureName);
                                 end
                            end
                        end
