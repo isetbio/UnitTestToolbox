@@ -76,8 +76,10 @@ function [validationData, extraData, validationTime, hostInfo] = fromLocalFile(o
     if (obj.useMatfile)
         eval(sprintf('runData = matOBJ.%s;', validationDataParamName));
     else
-        eval(sprintf('load(''%s'', ''%s'');',dataFileName, validationDataParamName));
-        eval(sprintf('runData = %s;', validationDataParamName));
+        % Changed by NPC on Oct 7, 2022 to enable running locally
+        %eval(sprintf('load(''%s'', ''%s'');',dataFileName, validationDataParamName));
+        %eval(sprintf('runData = %s;', validationDataParamName));
+        eval(sprintf('runData = load(''%s'');',dataFileName));
     end
     % return the validationData and time
     hostInfo        = runData.hostInfo;
