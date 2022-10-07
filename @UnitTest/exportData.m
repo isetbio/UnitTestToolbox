@@ -68,9 +68,8 @@ function toLocalFile(obj, dataFileName, runData)
         % get current variables
         varList = who(matOBJ);
         
-        % add new variable with new validation data
-        validationDataParamName = sprintf('run%05d', length(varList)+1);
-        eval(sprintf('matOBJ.%s = runData;', validationDataParamName));
+        % export data
+        eval(sprintf('save(''%s'', ''runData'');',dataFileName));
     else
         if (exist(dataFileName, 'file'))
             varList = who('-file', dataFileName);

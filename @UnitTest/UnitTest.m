@@ -62,7 +62,9 @@ classdef UnitTest < handle
         % the matfile class was introduced in 2011b.
         % for compatibility with eariler versions of matlab
         % set useMatfile = false.
-        useMatfile = false;
+        % NPC. Changed this to true on Oct 7, 2022 to enable running
+        % validations on data stored locally (dropbox)
+        useMatfile = true;
         
         % flag indicating whether to generate ground truth for all
         % remaining scripts with missing ground truth data
