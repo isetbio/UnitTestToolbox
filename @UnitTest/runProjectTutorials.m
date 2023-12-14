@@ -41,7 +41,7 @@ end
 curdir = pwd;
 tutorialOK = zeros(length(filesList),1);
 for ii = 1:length(filesList)
-    % Should we skip this one?
+    % Should we skip this one because it is listed as should be skipped?
     skipThisOne = false;
     for l = 1:numel(scriptsToSkip)
         s = scriptsToSkip{l};
@@ -50,6 +50,20 @@ for ii = 1:length(filesList)
         end
     end
     if (skipThisOne)
+        tutorialOK(ii) = -1;
+        continue;
+    end
+
+    % Another reason to skip is if the tutorial itself has a comment
+    % line that says UTTBSkip.  To determine this we need to read the
+    % source and scan for that line.
+    % Open file
+    theFileH = fopen(filesList{ii},'r');
+    theFileText = {char(fread(theFileH,'uint8=>char')')};
+    fclose(theFileH);
+    skipTest = strfind(theFileText,'% UTTBSkip');
+    if (~isempty(skipTest)) %#ok<*STREMP>
+        fprintf('\tFile %s contains ''%% UTTBSkip'' - skipping.\n',filesList{ii});
         tutorialOK(ii) = -1;
         continue;
     end
