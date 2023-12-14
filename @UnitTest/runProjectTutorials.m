@@ -42,10 +42,13 @@ curdir = pwd;
 tutorialOK = zeros(length(filesList),1);
 for ii = 1:length(filesList)
     % Should we skip this one because it is listed as should be skipped?
+    % Things to skip are strings that appear anywhere in the file's full
+    % pathname.
     skipThisOne = false;
     for l = 1:numel(scriptsToSkip)
         s = scriptsToSkip{l};
-        if (strfind(filesList{ii}, s))
+        skipTest = strfind(filesList{ii}, s);
+        if (~isempty(skipTest))
             skipThisOne = true;
         end
     end
@@ -59,9 +62,10 @@ for ii = 1:length(filesList)
     % source and scan for that line.
     % Open file
     theFileH = fopen(filesList{ii},'r');
-    theFileText = {char(fread(theFileH,'uint8=>char')')};
+    theFileText = char(fread(theFileH,'uint8=>char')');
     fclose(theFileH);
     skipTest = strfind(theFileText,'% UTTBSkip');
+    clear theFileText
     if (~isempty(skipTest)) %#ok<*STREMP>
         fprintf('\tFile %s contains ''%% UTTBSkip'' - skipping.\n',filesList{ii});
         tutorialOK(ii) = -1;
