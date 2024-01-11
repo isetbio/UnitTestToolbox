@@ -82,6 +82,10 @@ for ii = 1:length(filesList)
     catch
         tutorialOK(ii) = false;
     end
+
+    % Force a draw to make sure we clear some memory and process
+    drawnow;
+    
     cd(curdir);
 end
 
