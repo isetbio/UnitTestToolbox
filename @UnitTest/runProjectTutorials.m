@@ -90,7 +90,7 @@ for ii = 1:length(filesList)
 end
 
 %% Report of what happened
-fprintf('\n ***** Summary of tutorials run *****\n');
+fprintf('\n ***** Summary tests *****\n');
 for ii = 1:length(filesList)
     fprintf('%s -- ',filesList{ii});
     if (tutorialOK(ii) == 1)
