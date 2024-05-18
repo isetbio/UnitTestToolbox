@@ -1,11 +1,12 @@
-function status = runProjectTutorials(p, scriptsToSkip, scriptCollection)
+function [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollection)
 % Method to run the scripts in the tutorialsSourceDir
 %
 % Syntax:
-%    status = runProjectTutorials(p, scriptsToSkip, scriptCollection)
+%  [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollection)
 %
 % Outputs:
-%    status    - Returns true if all ran OK, false otherwise.
+%   status    - Returns true if all ran OK, false otherwise.
+%   report    - Print out of what happened for each script
 %
 % The params struct (p) has these variables:
 %  - rootDirectory
@@ -90,17 +91,21 @@ for ii = 1:length(filesList)
 end
 
 %% Report of what happened
-fprintf('\n ***** Summary tests *****\n');
+
+% Could use addText for ISET, but maybe not for other repositories.
+report = sprintf('\n ***** Summary tests *****\n');
 for ii = 1:length(filesList)
-    fprintf('%s -- ',filesList{ii});
+    report = [report, sprintf('%s -- ',filesList{ii})]; %#ok<*AGROW>
     if (tutorialOK(ii) == 1)
-        fprintf('OK!\n');
+        report = [report, sprintf('OK!\n')];
     elseif (tutorialOK(ii) == -1)
-        fprintf('SKIPPED\n');
+        report = [report, sprintf('SKIPPED\n')];
     else
-        fprintf(2,'BROKEN!\n');
+        report = [report, sprintf(2,'BROKEN!\n')];
     end
 end
+
+disp(report);
 
 %% Return status
 status = all(tutorialOK);
