@@ -97,11 +97,11 @@ report = sprintf('\n ***** Summary tests *****\n');
 for ii = 1:length(filesList)
     report = [report, sprintf('%s -- ',filesList{ii})]; %#ok<*AGROW>
     if (tutorialOK(ii) == 1)
-        report = [report, sprintf('OK!\n')];
+        report = [report, sprintf(' OK!\n')];
     elseif (tutorialOK(ii) == -1)
-        report = [report, sprintf('SKIPPED\n')];
+        report = [report, sprintf(' SKIPPED\n')];
     else
-        report = [report, sprintf(2,'BROKEN!\n')];
+        report = [report, sprintf(' BROKEN!\n')];
     end
 end
 
