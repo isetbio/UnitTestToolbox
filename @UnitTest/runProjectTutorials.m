@@ -101,7 +101,7 @@ for ii = 1:length(filesList)
     elseif (tutorialOK(ii) == -1)
         report = [report, sprintf(' SKIPPED\n')];
     else
-        report = [report, sprintf(' BROKEN!\n')];
+        report = [report, sprintf(' ******** BROKEN! ***********\n')];
     end
 end
 
