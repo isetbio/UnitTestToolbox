@@ -3,6 +3,6 @@ A toolbox provides critical functions when validating large numbers of scripts. 
 
 This is used by ISETValidate to test ISETCam, ISETBio, and ISET3d.
 
-See the UnitTestToolbox wiki for more information.
+See the [UnitTestToolbox wiki](https://github.com/isetbio/UnitTestToolbox/wiki) for more information.
 
 Developers: Nicolas P. Cottaris and David H. Brainard, University of Pennsylvania
