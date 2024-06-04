@@ -91,21 +91,26 @@ for ii = 1:length(filesList)
 end
 
 %% Report of what happened
-
+%
 % Could use addText for ISET, but maybe not for other repositories.
+fprintf('\n ***** Summary tests *****\n');
 report = sprintf('\n ***** Summary tests *****\n');
 for ii = 1:length(filesList)
+    fprintf('%s -- ',filesList{ii});
     report = [report, sprintf('%s -- ',filesList{ii})]; %#ok<*AGROW>
     if (tutorialOK(ii) == 1)
+        fprintf(' OK!\n');
         report = [report, sprintf(' OK!\n')];
     elseif (tutorialOK(ii) == -1)
+        fprintf(' SKIPPED\n');
         report = [report, sprintf(' SKIPPED\n')];
     else
+        fprintf(2,' ******** BROKEN! ***********\n');
         report = [report, sprintf(' ******** BROKEN! ***********\n')];
     end
 end
 
-disp(report);
+%disp(report);
 
 %% Return status
 status = all(tutorialOK);
