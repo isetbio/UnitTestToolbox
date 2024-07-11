@@ -86,6 +86,8 @@ for ii = 1:length(filesList)
 
     % Force a draw to make sure we clear some memory and process
     drawnow;
+    close all;
+    drawnow;
     
     cd(curdir);
 end
