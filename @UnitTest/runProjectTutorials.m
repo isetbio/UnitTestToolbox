@@ -124,8 +124,12 @@ function updatedFileList = getContents(directory, fileList)
 oldFileList = fileList;
 cd(directory);
 
-% look for m-files
-contents = dir('*.m');
+% look for m-files or mlx-files.  An alternative is to use the
+% function what:
+%
+%   files = what('.'); contents = [files.m,files.mlx];
+%
+contents = [dir('*.mlx'); dir('*.m')];
 for k = 1:numel(contents)
     oldFileList{numel(oldFileList)+1} = fullfile(directory,contents(k).name);
 end
