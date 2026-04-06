@@ -26,13 +26,13 @@ function [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollecti
 %
 
 % See if there is a log file, create if so
-if (nargin == 4 & ~isempty(logFile)
+if (nargin == 4 & ~isempty(logFile))
     if (~exist(logFile,'file'))
         logFH = fopen(outputFile,"w");
         fclose(logFH);
     end
 else
-    outputFile = '';
+    logFile = '';
 end
 
 varNames = fieldnames(p);
