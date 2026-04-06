@@ -29,6 +29,7 @@ function [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollecti
 if (nargin == 4 & ~isempty(logFile))
     if (~exist(logFile,'file'))
         logFH = fopen(logFile,"w");
+        fprintf(logFH,'Starting %s\n',p.tutorialsSourceDir);
         fclose(logFH);
     end
 else
@@ -121,6 +122,12 @@ for ii = 1:length(filesList)
     cd(curdir);
 end
 
+if (~isempty(logFile))
+    logFH = fopen(logFile,"a");
+    fprintf(logFH,'\nDone testing %s\n',p.tutorialsSourceDir);
+    fclose(logFH);
+end
+
 %% Report of what happened
 %
 % Could use addText for ISET, but maybe not for other repositories.
@@ -139,6 +146,12 @@ for ii = 1:length(filesList)
         fprintf(2,' ******** BROKEN! ***********\n');
         report = [report, sprintf(' ******** BROKEN! ***********\n')];
     end
+end
+
+if (~isempty(logFile))
+    logFH = fopen(logFile,"a");
+    fprintf(logFH,'\nWrote log, all done with %s\n\n',p.tutorialsSourceDir);
+    fclose(logFH);
 end
 
 %disp(report);
