@@ -1,8 +1,8 @@
-function [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollection)
+function [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollection,logFile)
 % Method to run the scripts in the tutorialsSourceDir
 %
 % Syntax:
-%  [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollection)
+%  [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollection,[logFile])
 %
 % Outputs:
 %   status    - Returns true if all ran OK, false otherwise.
@@ -24,6 +24,16 @@ function [status, report] = runProjectTutorials(p, scriptsToSkip, scriptCollecti
 %
 % See also
 %
+
+% See if there is a log file, create if so
+if (nargin == 4 & ~isempty(logFile)
+    if (~exist(logFile,'file'))
+        logFH = fopen(outputFile,"w");
+        fclose(logFH);
+    end
+else
+    outputFile = '';
+end
 
 varNames = fieldnames(p);
 for k = 1:numel(varNames)
@@ -77,11 +87,30 @@ for ii = 1:length(filesList)
     [tutorialDirectoryName,tutorialName] = fileparts(filesList{ii});
     cd(tutorialDirectoryName)
     try
+        % Add to log file
+        if (~isempty(logFile))
+            logFH = fopen(logFile,"a");
+            fprintf(logFH,'Running %s ...',filesList{ii});
+            fclose(logFH);
+        end
+
         fprintf('Running %s\n',filesList{ii});
         runTheTutorial(tutorialName);
         tutorialOK(ii) = true;
+
+        if (~isempty(logFile))
+            logFH = fopen(logFile,"a");
+            fprintf(logFH,'run without error\n',filesList{ii});
+            fclose(logFH);
+        end
     catch
         tutorialOK(ii) = false;
+
+        if (~isempty(logFile))
+            logFH = fopen(logFile,"a");
+            fprintf(logFH,'run but with error\n',filesList{ii});
+            fclose(logFH);
+        end
     end
 
     % Force a draw to make sure we clear some memory and process
